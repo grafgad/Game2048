@@ -1,7 +1,6 @@
 package com.example.game2048.ui.theme
 
 import androidx.compose.material.Typography
-import androidx.compose.runtime.Immutable
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight

@@ -1,6 +1,5 @@
 package com.example.game2048.ui.theme
 
-import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 
 
