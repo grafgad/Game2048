@@ -18,37 +18,40 @@ fun Arena(
     Box(
         modifier = modifier
             .padding(16.dp)
+            .fillMaxSize()
+            .aspectRatio(1f)
             .background(GameColors.Grey)
     ) {
-        Row(
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentSize()
-//                .layout { measurable, constraints ->
-//                    val placeable = measurable.measure(constraints)
-//                    val currentWidth = placeable.width
-//                    layout(currentWidth, currentWidth) {
-//                        placeable.placeRelative(0,0)
-//                    }
-//                }
-            ,
-            Arrangement.SpaceAround
         ) {
-            for (i in 0 until 4) {
-                Field(modifier = Modifier.weight(1f)
+            for (k in 0 until 4) {
+                HorizontalLine(
+                    value = Fields().vertLine[k]
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun HorizontalLine(
+    modifier: Modifier = Modifier,
+    value: Array<Int> = arrayOf()
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        Arrangement.SpaceAround
+    ) {
+        for (i in 0 until 4) {
+            Field(
+                modifier = Modifier
+                    .weight(1f)
                     .aspectRatio(1f)
                     .padding(3.dp)
                     .background(GameColors.Yellow),
-                    value = Fields().line1[i]
-                )
-            }
-
-//            listOf(
-//                Field(value = null),
-//                Field(value = 0),
-//                Field(value = 12345),
-//                Field(value = 0),
-//            )
+                value = value[i]
+            )
         }
     }
 }
@@ -57,32 +60,28 @@ fun Arena(
 fun Field(
     value: Int?,
     modifier: Modifier = Modifier
-//        .widthIn(min = 30.dp, max = 90.dp)
-//        .width(35.dp)
-
 ) {
     Box(
-        modifier = modifier
-
-        ,
+        modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center,
     ) {
         Text(
-            text =
-            value?.toString() ?: ""
+            text = value?.toString() ?: "",
+            maxLines = 1,
+            softWrap = false,
+//            fontSize = 20.sp
         )
-
-
     }
 }
 
 
 @Preview(widthDp = 200, heightDp = 320)
 @Composable
-fun ArenaPreview() {
+fun ArenaPreview320() {
     Arena()
 }
-@Preview()
+
+@Preview
 @Composable
 fun ArenaPReview() {
     Arena()
