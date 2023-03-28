@@ -3,13 +3,18 @@ package com.example.game2048
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.game2048.ui.theme.GameColors
 
+private const val TEXT_SCALE_REDUCTION_INTERVAL = 0.9f
 
 @Composable
 fun Arena(
@@ -45,12 +50,13 @@ fun HorizontalLine(
     ) {
         for (i in 0 until 4) {
             Field(
+                value = value[i],
+                textStyle = TextStyle(fontSize = 38.sp),
                 modifier = Modifier
                     .weight(1f)
                     .aspectRatio(1f)
                     .padding(3.dp)
                     .background(GameColors.Yellow),
-                value = value[i]
             )
         }
     }
@@ -59,17 +65,30 @@ fun HorizontalLine(
 @Composable
 fun Field(
     value: Int?,
-    modifier: Modifier = Modifier
+    textStyle: TextStyle,
+    modifier: Modifier = Modifier,
+    targetTextSizeHeight: TextUnit = textStyle.fontSize,
+    maxLines: Int = 1,
 ) {
     Box(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center,
     ) {
+        var textSize by remember { mutableStateOf(targetTextSizeHeight) }
+
         Text(
             text = value?.toString() ?: "",
-            maxLines = 1,
-            softWrap = false,
-//            fontSize = 20.sp
+            modifier = Modifier,
+            fontSize = textSize,
+            overflow = TextOverflow.Ellipsis,
+            maxLines = maxLines,
+            onTextLayout = { textLayoutResult ->
+                val maxCurrentLineIndex: Int = textLayoutResult.lineCount - 1
+
+                if (textLayoutResult.isLineEllipsized(maxCurrentLineIndex)) {
+                    textSize = textSize.times(TEXT_SCALE_REDUCTION_INTERVAL)
+                }
+            },
         )
     }
 }
