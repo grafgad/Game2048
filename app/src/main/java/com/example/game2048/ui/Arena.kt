@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.game2048.Fields
+import com.example.game2048.GameViewModel
 import com.example.game2048.ui.theme.GameColors
 import kotlin.math.roundToInt
 
@@ -27,27 +28,17 @@ enum class States {
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun Arena(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: GameViewModel
 ) {
     val swipeableState = rememberSwipeableState(initialValue = 0)
     val direction = 0f/*TODO: переделать для направления*/
-    var offsetX by remember { mutableStateOf(0f) }
-    var offsetY by remember { mutableStateOf(0f) }
-
 
     Box(
         modifier = modifier
             .padding(16.dp)
             .aspectRatio(1f)
             .background(GameColors.Grey)
-            .offset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) }
-            .pointerInput(Unit) {
-                detectDragGestures { change, dragAmount ->
-                    change.consume()
-                    offsetX += dragAmount.x
-                    offsetY += dragAmount.y
-                }
-            }
 //            .swipeable(
 //                state = swipeableState,
 //                anchors = mapOf(
@@ -57,10 +48,14 @@ fun Arena(
 //                orientation = Orientation.Horizontal,/*TODO: сделать для 4-х направлений*/
 //            )
     ) {
+        val matrix = viewModel.matrix.collectAsState().value
         Column {
+
+
             for (i in 0 until 4) {
                 HorizontalFields(
-                    value = Fields.matrix[i]
+                    value = matrix.smth[i]
+//                    value = Fields.emptyMatrix.smth[i]
                 )
             }
         }
@@ -70,7 +65,7 @@ fun Arena(
 @Composable
 fun HorizontalFields(
     modifier: Modifier = Modifier,
-    value: Array<Int?> = arrayOf()
+    value: MutableList<Int?> = mutableListOf()
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
@@ -103,11 +98,11 @@ fun HorizontalFieldsPreview() {
 @Preview(widthDp = 200, heightDp = 320)
 @Composable
 fun ArenaPreview320() {
-    Arena()
+    Arena(viewModel = GameViewModel())
 }
 
 @Preview
 @Composable
 fun ArenaPReview() {
-    Arena()
+    Arena(viewModel = GameViewModel())
 }

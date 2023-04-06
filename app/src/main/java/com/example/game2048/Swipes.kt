@@ -1,23 +1,41 @@
 package com.example.game2048
 
-import kotlin.concurrent.timerTask
-import kotlin.math.absoluteValue
+import java.util.Collections
 
 class Swipes {
+
+    fun newGame() {
+        Fields.emptyMatrix.smth[(0..3).random()][(0..3).random()] = 2
+    }
     fun swipeToDown() {
 
-        for (line in 0 until 4) {
-            var lowestEmptyTile = Fields.matrix.size - 1
-            // считаем снизу вверх
-            for (digit in 3 downTo 0) {
-                val tile = Fields.matrix[digit][line]
-                if (tile != null) {
-                    Fields.matrix[lowestEmptyTile][line] = tile
-                    Fields.matrix[digit][line] = null
+        for (line in 3 downTo 0) {
+            var lowestEmptyTile: Int? = Fields.matrix.size - 1
+            var lowestFullTile: Int? = null
+            for (digit in 0 until 4) {
+                val tile = Fields.matrix[line][digit]
+                if (tile != null && line != 0) {
+                    lowestFullTile = Fields.matrix[line-1][digit]
+                    if (lowestFullTile != null) {
+                        Collections.swap(Fields.matrix[line], digit, lowestFullTile)
+                    }
+
                 }
-                lowestEmptyTile = digit
             }
         }
+
+//        for (line in 0 until 4) {
+//            var lowestEmptyTile = Fields.matrix.size - 1
+//            // считаем снизу вверх
+//            for (digit in 3 downTo 0) {
+//                val tile = Fields.matrix[digit][line]
+//                if (tile != null) {
+//                    Fields.matrix[lowestEmptyTile][line] = tile
+//                    Fields.matrix[digit][line] = null
+//                }
+//                lowestEmptyTile = digit
+//            }
+//        }
     }
 
     fun swipeToRight() {
@@ -33,7 +51,7 @@ class Swipes {
                     Fields.matrix[line][digit] = tile
                 }
                 if (tile == null) {
-                    Fields.matrix[line].reverse(digit, mostRightEmptyTile)
+                    Fields.matrix[line].reverse()
                 }
 
 

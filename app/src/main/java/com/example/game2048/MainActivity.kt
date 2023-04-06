@@ -1,6 +1,5 @@
 package com.example.game2048
 
-import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -30,19 +29,11 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.padding(it)
                             .background(GameColors.Purple200)
                     )
-                    onSwipe()
                 }
             }
         }
     }
 }
-
-private fun onSwipe() {
-    for (i in 0 until 4) {
-
-    }
-}
-
 
 @Preview(showBackground = true)
 @Composable
