@@ -14,13 +14,14 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.game2048.Arena
+import com.example.game2048.Fields
 import com.example.game2048.R
+import com.example.game2048.Swipes
 
 @Composable
 fun GameScreen(
-    movesCount: Int,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    movesCount: Int = 0
 ) {
     Column(
         modifier = modifier.fillMaxSize(),
@@ -55,7 +56,26 @@ fun GameScreen(
 //            Spacer(modifier = Modifier.weight(1f))
             Button(
 //                modifier = Modifier.weight(1f),
-                onClick = { /*TODO start new game?*/ }
+                onClick = {
+                    println(Fields.matrix[2].contentToString())
+                    println(Fields.matrix[3].contentToString())
+                    Swipes().swipeToRight()
+                    println("swipe")
+                    println(Fields.matrix[2].contentToString())
+                    println(Fields.matrix[3].contentToString())
+//                    println(Fields.matrix[0][2])
+//                    println(Fields.matrix[1][2])
+//                    println(Fields.matrix[2][2])
+//                    println(Fields.matrix[3][2])
+//                    println("swipe")
+//                    Swipes().swipeToDown()
+//                    println(Fields.matrix[0][2])
+//                    println(Fields.matrix[1][2])
+//                    println(Fields.matrix[2][2])
+//                    println(Fields.matrix[3][2])
+
+
+                }
             ) {
                 Icon(
                     imageVector = ImageVector.vectorResource(id = R.drawable.baseline_autorenew_24),
@@ -74,5 +94,5 @@ fun GameScreen(
 @Preview
 @Composable
 fun GameScreenPreview() {
-    GameScreen(0)
+    GameScreen()
 }
