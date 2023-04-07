@@ -5,7 +5,7 @@ import java.util.Collections
 class Swipes {
 
     fun newGame() {
-        Fields.emptyMatrix.smth[(0..3).random()][(0..3).random()] = 2
+        emptyMatrix.newMatrix[(0..3).random()][(0..3).random()] = 2
     }
     fun swipeToDown() {
 

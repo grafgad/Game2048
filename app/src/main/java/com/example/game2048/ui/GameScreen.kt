@@ -5,8 +5,6 @@ import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -16,10 +14,11 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.game2048.Fields
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.game2048.GameViewModel
 import com.example.game2048.R
-import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.game2048.Swipes
+import com.example.game2048.emptyMatrix
 
 @Composable
 fun GameScreen(
@@ -41,11 +40,12 @@ fun GameScreen(
             viewModel = viewModel
         )
         Arena(viewModel = viewModel)
+        SwipeButtons()
     }
 }
 
 @Composable
-fun Statistics (
+fun Statistics(
     modifier: Modifier = Modifier,
     movesCount: Int,
 ) {
@@ -89,7 +89,7 @@ fun Buttons(
                 this.apply {
                     viewModel.onClick()
                 }
-                println(Fields.emptyMatrix.smth[1][1])
+                println(emptyMatrix.newMatrix[1][1])
 //                    println(Fields.matrix[2].contentToString())
 //                    println(Fields.matrix[3].contentToString())
 //                    Swipes().swipeToRight()
@@ -122,6 +122,40 @@ fun Buttons(
         }
     }
 }
+
+@Composable
+fun SwipeButtons(
+    modifier: Modifier = Modifier
+) {
+
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Button(onClick = { /*TODO*/ }) {
+            Text(text = "UP")
+        }
+        Row {
+            Button(
+                onClick = { /*TODO*/ },
+                modifier = Modifier.padding(horizontal = 20.dp)
+            ) {
+                Text(text = "LEFT")
+            }
+            Button(
+                onClick = { /*TODO*/ },
+                modifier = Modifier.padding(horizontal = 20.dp)
+            ) {
+                Text(text = "RIGHT")
+            }
+        }
+        Button(onClick = { Swipes().swipeToDown() }) {
+            Text(text = "DOWN")
+        }
+    }
+
+}
+
 @Preview
 @Composable
 fun GameScreenPreview() {

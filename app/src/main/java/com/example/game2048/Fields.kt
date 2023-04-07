@@ -7,9 +7,16 @@ object Fields {
     private var line3: MutableList<Int?> = mutableListOf(8, 2, null, 64)
     private var line4: MutableList<Int?> = mutableListOf(4,2,2,null)
 
-    private val line: MutableList<Int?> = mutableListOf(null, null, null, 1)
 
-    object emptyMatrix {val smth: MutableList<MutableList<Int?>> = mutableListOf(line, line, line, line)}
+
+
 
     var matrix = arrayOf(line1, line2, line3, line4)
+}
+object emptyMatrix {
+
+    private val line: MutableList<Int?> = mutableListOf(null, null, null, 1)
+
+    val newMatrix: MutableList<MutableList<Int?>> = mutableListOf(line, line, line, line)
+
 }

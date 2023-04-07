@@ -1,22 +1,18 @@
 package com.example.game2048.ui
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.rememberSwipeableState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.game2048.Fields
 import com.example.game2048.GameViewModel
 import com.example.game2048.ui.theme.GameColors
-import kotlin.math.roundToInt
 
 enum class States {
     RIGHT,
@@ -48,14 +44,11 @@ fun Arena(
 //                orientation = Orientation.Horizontal,/*TODO: сделать для 4-х направлений*/
 //            )
     ) {
-        val matrix = viewModel.matrix.collectAsState().value
+        val vmMatrix = viewModel.matrix.collectAsState().value
         Column {
-
-
             for (i in 0 until 4) {
                 HorizontalFields(
-                    value = matrix.smth[i]
-//                    value = Fields.emptyMatrix.smth[i]
+                    value = vmMatrix.newMatrix[i]
                 )
             }
         }
