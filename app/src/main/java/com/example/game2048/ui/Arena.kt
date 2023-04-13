@@ -6,12 +6,10 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.rememberSwipeableState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.example.game2048.Fields
 import com.example.game2048.GameViewModel
+import com.example.game2048.ROWCOUNT
 import com.example.game2048.ui.theme.GameColors
 
 enum class States {
@@ -44,11 +42,12 @@ fun Arena(
 //                orientation = Orientation.Horizontal,/*TODO: сделать для 4-х направлений*/
 //            )
     ) {
-        val vmMatrix = viewModel.matrix.collectAsState().value
+        val vmMatrix by viewModel.matrix.collectAsState()
         Column {
-            for (i in 0 until 4) {
+            repeat(ROWCOUNT) { row ->
                 HorizontalFields(
-                    value = vmMatrix.newMatrix[i]
+                    modifier = Modifier,
+                    value = vmMatrix.asMatrix()[row]
                 )
             }
         }
@@ -58,36 +57,26 @@ fun Arena(
 @Composable
 fun HorizontalFields(
     modifier: Modifier = Modifier,
-    value: MutableList<Int?> = mutableListOf()
+    value: List<Int?> = listOf()
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
         Arrangement.SpaceAround
     ) {
-        for (i in 0 until 4) {
+        repeat(ROWCOUNT) { digit ->
             Tile(
                 modifier = Modifier
                     .weight(1f)
                     .aspectRatio(1f)
                     .padding(3.dp)
                     .background(GameColors.Yellow),
-                value = value[i],
-                textStyle = TextStyle(fontSize = 50.sp),
+                value = value[digit],
             )
         }
     }
 }
 
 
-
-@Preview
-@Composable
-fun HorizontalFieldsPreview() {
-    HorizontalFields(
-        modifier = Modifier,
-        Fields.line1
-    )
-}
 @Preview(widthDp = 200, heightDp = 320)
 @Composable
 fun ArenaPreview320() {

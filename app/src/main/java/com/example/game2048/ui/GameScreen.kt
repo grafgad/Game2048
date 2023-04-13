@@ -1,5 +1,6 @@
 package com.example.game2048.ui
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.Icon
@@ -18,7 +19,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.game2048.GameViewModel
 import com.example.game2048.R
 import com.example.game2048.Swipes
-import com.example.game2048.emptyMatrix
 
 @Composable
 fun GameScreen(
@@ -30,7 +30,6 @@ fun GameScreen(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center
     ) {
-
         Statistics(
             modifier = Modifier,
             movesCount = movesCount
@@ -40,7 +39,7 @@ fun GameScreen(
             viewModel = viewModel
         )
         Arena(viewModel = viewModel)
-        SwipeButtons()
+        SwipeButtons(modifier, viewModel)
     }
 }
 
@@ -75,40 +74,15 @@ fun Buttons(
     ) {
         Button(
             onClick = { /*TODO Cancel last move*/ },
-//                modifier = Modifier.weight(1f)
         ) {
             Icon(
                 imageVector = ImageVector.vectorResource(id = R.drawable.baseline_undo_24),
                 contentDescription = "Undo"
             )
         }
-//            Spacer(modifier = Modifier.weight(1f))
         Button(
-//                modifier = Modifier.weight(1f),
-            onClick = {
-                this.apply {
-                    viewModel.onClick()
-                }
-                println(emptyMatrix.newMatrix[1][1])
-//                    println(Fields.matrix[2].contentToString())
-//                    println(Fields.matrix[3].contentToString())
-//                    Swipes().swipeToRight()
-//                    println("swipe")
-//                    println(Fields.matrix[2].contentToString())
-//                    println(Fields.matrix[3].contentToString())
-
-//                    println(Fields.matrix[0][2])
-//                    println(Fields.matrix[1][2])
-//                    println(Fields.matrix[2][2])
-//                    println(Fields.matrix[3][2])
-//                    println("swipe")
-//                    Swipes().swipeToDown()
-//                    println(Fields.matrix[0][2])
-//                    println(Fields.matrix[1][2])
-//                    println(Fields.matrix[2][2])
-//                    println(Fields.matrix[3][2])
-
-//                Swipes().newGame()
+            {
+                Swipes().newGame()
             }
         ) {
             Icon(
@@ -125,31 +99,37 @@ fun Buttons(
 
 @Composable
 fun SwipeButtons(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: GameViewModel
 ) {
-
     Column(
         modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Button(onClick = { /*TODO*/ }) {
+        Button(onClick = { Swipes().swipeToUp() }) {
             Text(text = "UP")
         }
         Row {
             Button(
-                onClick = { /*TODO*/ },
+                onClick = { Swipes().swipeToLeft() },
                 modifier = Modifier.padding(horizontal = 20.dp)
             ) {
                 Text(text = "LEFT")
             }
             Button(
-                onClick = { /*TODO*/ },
+                onClick = {
+                    viewModel.onClick()
+                    Log.d("DDDDDD", viewModel.matrix.value.asMatrix()[1][2].toString())
+                    Log.d("DDDDDD", viewModel.matrix.value.asMatrix().toString())
+                },
                 modifier = Modifier.padding(horizontal = 20.dp)
             ) {
                 Text(text = "RIGHT")
             }
         }
-        Button(onClick = { Swipes().swipeToDown() }) {
+        Button(onClick = {
+            Swipes().swipeToDown()
+        }) {
             Text(text = "DOWN")
         }
     }

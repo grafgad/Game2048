@@ -9,8 +9,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 private const val TEXT_SCALE_REDUCTION_INTERVAL = 0.9f
 
@@ -18,22 +18,20 @@ private const val TEXT_SCALE_REDUCTION_INTERVAL = 0.9f
 fun Tile(
     modifier: Modifier = Modifier,
     value: Int?,
-    textStyle: TextStyle,
-    targetTextSizeHeight: TextUnit = textStyle.fontSize,
-    maxLines: Int = 1,
+    textStyle: TextStyle = TextStyle(fontSize = 50.sp),
 ) {
     Box(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        var textSize by remember { mutableStateOf(targetTextSizeHeight) }
+        var textSize by remember { mutableStateOf(textStyle.fontSize) }
 
         Text(
             text = value?.toString() ?: "",
             modifier = Modifier.padding(2.dp),
             fontSize = textSize,
             overflow = TextOverflow.Ellipsis,
-            maxLines = maxLines,
+            maxLines = 1,
             onTextLayout = { textLayoutResult ->
                 val maxCurrentLineIndex: Int = textLayoutResult.lineCount - 1
 

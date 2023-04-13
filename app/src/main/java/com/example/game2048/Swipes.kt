@@ -5,8 +5,11 @@ import java.util.Collections
 class Swipes {
 
     fun newGame() {
-        emptyMatrix.newMatrix[(0..3).random()][(0..3).random()] = 2
+        EmptyMatrix.newMatrix[(0..3).random()][(0..3).random()] = 2
     }
+
+    fun swipeToUp () {}
+    fun swipeToLeft() {}
     fun swipeToDown() {
 
         for (line in 3 downTo 0) {
@@ -19,7 +22,6 @@ class Swipes {
                     if (lowestFullTile != null) {
                         Collections.swap(Fields.matrix[line], digit, lowestFullTile)
                     }
-
                 }
             }
         }
