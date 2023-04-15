@@ -119,7 +119,6 @@ fun SwipeButtons(
             Button(
                 onClick = {
                     viewModel.onClick()
-                    Log.d("DDDDDD", viewModel.matrix.value.asMatrix()[1][2].toString())
                     Log.d("DDDDDD", viewModel.matrix.value.asMatrix().toString())
                 },
                 modifier = Modifier.padding(horizontal = 20.dp)
