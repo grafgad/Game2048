@@ -15,6 +15,9 @@ data class Matrix(
         4,2,2,null
     )
 ) {
+    fun matrixCopy(newArray: MutableList<Int?>): Matrix = Matrix().copy(
+        array = newArray.toMutableList()
+    )
 
     fun asMatrix(): MutableList<List<Int?>> {
         val outerList = mutableListOf<List<Int?>>()

@@ -18,9 +18,7 @@ class GameViewModel : ViewModel() {
         arr[position] = value
 
         _matrix.update {
-            it.copy(
-                array = arr
-            )
+            it.matrixCopy(arr)
         }
         return _matrix.value
     }
