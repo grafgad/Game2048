@@ -82,7 +82,7 @@ fun Buttons(
         }
         Button(
             {
-                Swipes().newGame()
+                viewModel.newGame()
             }
         ) {
             Icon(
