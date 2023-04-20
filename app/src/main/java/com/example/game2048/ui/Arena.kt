@@ -68,8 +68,7 @@ fun HorizontalFields(
                 modifier = Modifier
                     .weight(1f)
                     .aspectRatio(1f)
-                    .padding(3.dp)
-                    .background(GameColors.Yellow),
+                    .padding(3.dp),
                 value = value[digit],
             )
         }

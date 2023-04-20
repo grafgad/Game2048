@@ -118,6 +118,7 @@ fun SwipeButtons(
             }
             Button(
                 onClick = {
+                    Swipes().swipeToRight()
                     viewModel.onClick()
                     Log.d("DDDDDD", viewModel.matrix.value.asMatrix().toString())
                 },
