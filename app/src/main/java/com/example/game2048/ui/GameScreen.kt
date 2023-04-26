@@ -6,6 +6,9 @@ import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -26,27 +29,35 @@ fun GameScreen(
     movesCount: Int = 0,
     viewModel: GameViewModel = viewModel()
 ) {
+    val moves = remember {
+        mutableStateOf(movesCount)
+    }
     Column(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center
     ) {
         Statistics(
             modifier = Modifier,
-            movesCount = movesCount
+            movesCount = moves
         )
         Buttons(
             modifier = Modifier,
-            viewModel = viewModel
+            viewModel = viewModel,
+            movesCount = moves
         )
         Arena(viewModel = viewModel)
-        SwipeButtons(modifier, viewModel)
+        SwipeButtons(
+            modifier,
+            viewModel,
+            movesCount = moves
+        )
     }
 }
 
 @Composable
 fun Statistics(
     modifier: Modifier = Modifier,
-    movesCount: Int,
+    movesCount: MutableState<Int>,
 ) {
     Row(
         modifier = modifier
@@ -54,7 +65,7 @@ fun Statistics(
         horizontalArrangement = Arrangement.SpaceAround
     ) {
         Text(
-            text = (stringResource(id = R.string.moves) + movesCount),
+            text = (stringResource(id = R.string.moves) + movesCount.value.toString()),
             modifier = Modifier.padding(2.dp),
             fontSize = 20.sp,
         )
@@ -65,15 +76,17 @@ fun Statistics(
 @Composable
 fun Buttons(
     modifier: Modifier = Modifier,
-    viewModel: GameViewModel
+    viewModel: GameViewModel,
+    movesCount: MutableState<Int>,
 ) {
+
     Row(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Button(
-            onClick = { /*TODO Cancel last move*/ },
+            onClick = { movesCount.value-- },
         ) {
             Icon(
                 imageVector = ImageVector.vectorResource(id = R.drawable.baseline_undo_24),
@@ -100,24 +113,32 @@ fun Buttons(
 @Composable
 fun SwipeButtons(
     modifier: Modifier = Modifier,
-    viewModel: GameViewModel
+    viewModel: GameViewModel,
+    movesCount: MutableState<Int>,
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Button(onClick = { Swipes().swipeToUp() }) {
+        Button(onClick = {
+            movesCount.value++
+            Swipes().swipeToUp()
+        }) {
             Text(text = "UP")
         }
         Row {
             Button(
-                onClick = { Swipes().swipeToLeft() },
+                onClick = {
+                    movesCount.value++
+                    Swipes().swipeToLeft()
+                          },
                 modifier = Modifier.padding(horizontal = 20.dp)
             ) {
                 Text(text = "LEFT")
             }
             Button(
                 onClick = {
+                    movesCount.value++
                     Swipes().swipeToRight()
                     viewModel.onClick()
                     Log.d("DDDDDD", viewModel.matrix.value.asMatrix().toString())
@@ -128,6 +149,7 @@ fun SwipeButtons(
             }
         }
         Button(onClick = {
+            movesCount.value++
             Swipes().swipeToDown()
         }) {
             Text(text = "DOWN")
