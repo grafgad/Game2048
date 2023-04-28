@@ -3,7 +3,9 @@ package com.example.game2048
 const val ROWCOUNT = 4
 
 data class Matrix(
-     var array: MutableList<Int?> = mutableListOf(
+    var emptyArr: MutableList<Int?> = arrayOfNulls<Int?>(16).toMutableList(),
+
+    var array: MutableList<Int?> = mutableListOf(
 //        null, null, null, null,
 //        null, null, null, null,
 //        null, null, null, null,

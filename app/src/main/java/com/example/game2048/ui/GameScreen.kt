@@ -1,7 +1,12 @@
 package com.example.game2048.ui
 
 import android.util.Log
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
@@ -86,7 +91,9 @@ fun Buttons(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Button(
-            onClick = { movesCount.value-- },
+            onClick = {
+                movesCount.value--
+            },
         ) {
             Icon(
                 imageVector = ImageVector.vectorResource(id = R.drawable.baseline_undo_24),
@@ -131,7 +138,7 @@ fun SwipeButtons(
                 onClick = {
                     movesCount.value++
                     Swipes().swipeToLeft()
-                          },
+                },
                 modifier = Modifier.padding(horizontal = 20.dp)
             ) {
                 Text(text = "LEFT")
