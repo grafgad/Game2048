@@ -12,25 +12,29 @@ object GameColors {
     val Grey = Color(0xFF949494)
     val Yellow = Color(0xFFF8BC25)
 
-    val colorFor_2 = Color(0xFFB9F825)
-    val colorFor_4 = Color(0xFF2584F8)
-    val colorFor_8 = Color(0xFFB9F825)
-    val colorFor_16 = Color(0xFFB9F825)
-    val colorFor_32  = Color(0xFFB9F825)
-    val colorFor_64  = Color(0xFFB9F825)
-    val colorFor_128 = Color(0xFFB9F825)
-    val colorFor_256 = Color(0xFFB9F825)
-    val colorFor_512 = Color(0xFFB9F825)
-    val colorFor_1024 = Color(0xFFB9F825)
-    val colorFor_2048 = Color(0xFFB9F825)
-    val colorFor_4096 = Color(0xFFB9F825)
-    val colorFor_8192 = Color(0xFFB9F825)
-    val colorFor_16384 = Color(0xFFF825F4)
-    val colorFor_32768 = Color(0xFFB9F825)
-    val colorFor_65536 = Color(0xFFB9F825)
-
+    val tileColors = mapOf<Int, Color>(
+        2 to Color(0xFFB9F825),
+        4 to Color(0xFF2584F8),
+        8 to Color(0xFFB9F825),
+        16 to Color(0xFFB9F825),
+        32 to Color(0xFFB9F825),
+        64 to Color(0xFFB9F825),
+        128 to Color(0xFFB9F825),
+        256 to Color(0xFFB9F825),
+        512 to Color(0xFFB9F825),
+        1024 to Color(0xFFB9F825),
+        2048 to Color(0xFFB9F825),
+        4096 to Color(0xFFB9F825),
+        8192 to Color(0xFFB9F825),
+        16384 to Color(0xFFF825F4),
+        32768 to Color(0xFFB9F825),
+        65536 to Color(0xFFB9F825),
+    )
 }
 
+fun GameColors.tileColor(digit: Int?): Color {
+    return tileColors[digit] ?: Color(0xFFF825F4)
+}
 
 /*
 primary: Color,
