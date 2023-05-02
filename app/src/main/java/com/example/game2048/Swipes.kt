@@ -1,54 +1,81 @@
 package com.example.game2048
 
-import android.util.Log
-
 class Swipes {
     fun newGame() {
 
     }
 
     fun swipeToUp() {}
-    var line = mutableListOf( null, null, 1, 2,)
+    private var line = mutableListOf(2, 2, null, 2)
 
-    fun swipeToLeft() {
-        //собрать элементы с цифрами в начале
-        if (line.contains(null)) {
-            for (element in line.indices) {
-                if (line.first() == null) {
-                    line.add(null)
-                    line.removeAt(0)
-                    println(line)
+    private val matrix = mutableListOf(
+        null, 8192, 4096, 2048,
+        null, null, 256, 128,
+        8, 2, null, null,
+        4, 2, 2, null
+    )
+    private val tempArr = mutableListOf<Int?>()
+    private var summed = false
+    // собрать элементы с цифрами в начале
+    fun swipeToLeft(/*matrix: MutableList<Int?>*/): Unit {
+        // разделили на линии
+        for (line in 0 until matrix.size / ROWCOUNT) {
+            val startIndex = line * ROWCOUNT // начало линии
+            val endIndex = startIndex + ROWCOUNT - 1 // конец линии
+            // проходим по элементам линии
+            for (digit in startIndex..endIndex) {
+                for (digit2 in digit + 1 until endIndex) {
+                    // сравнение соседних элементов линии
+                    if (matrix[digit] == matrix[digit2] && matrix[digit] != null) {
+                        if (summed) {
+                            break // усли суммирование уже произошло, то прерываем цикл
+                        }
+                        summed = true
+                        matrix[digit] = matrix[digit]!!.times(2) // умножаем значение вдвое
+                        matrix[digit2] = null // обнуляем соседнюю ячейку
+                    }
                 }
-
-//                if (line[element] == null) {
-//                    line.add(0, 0)
-//                    line.removeAt(
-//                        index = element
-//                    )
-//                }
-//                println(line)
+                // добавляем во временный массив числовые элементы
+                if (matrix[digit] != null) {
+                    tempArr.add(matrix[digit])
+                }
+            }
+            // проверяем длину временного массива и добавляем в его конец null,
+            // если он короче длины исходного
+            while (tempArr.size <= endIndex) {
+                tempArr.add(null)
             }
         }
 
 
-//        for (i in line.size-1 downTo 0) {
-//            if (line[i] == null && i>0) {
-//                line[i] = line[i-1]
-//                line[i-1] = null
-//                Log.d("DDDDDD", line.toString())
-//            }
-//
-//        }
 
-//        repeat(line.size) {position ->
-//            if (line[position] != null) {
-//                line[position]?.let { line.last()?.plus(it) }
-//                println(line[position])
-//                println(position)
+//        // поиск и суммирование первых одинаковых элементов
+//        for (digit in line.indices) {
+//            for (digit2 in digit + 1 until line.size) {
+//                if (line[digit] == line[digit2]) {
+//                    if (summed) {
+//                        break
+//                    }
+//                    summed = true
+//                    line[digit] = (line[digit]!!.times(2))
+//                    line[digit2] = null
+//                }
 //            }
 //        }
-
+//        println(line) // печать измененного массива
+//        // удаление всех null из массива
+//        line.filterNotNullTo(tempArr)
+//        // присвоение null всем элементам исходного массива
+//        for (i in 0 until line.size) {
+//            line[i] = null
+//        }
+//        // добавление новых элементов в старый массив
+//        for (k in 0 until tempArr.size) {
+//            line[k] = tempArr[k]
+//        }
+//        println(line)
     }
+
     fun swipeToDown() {
 
 //        for (line in 3 downTo 0) {
