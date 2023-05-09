@@ -11,34 +11,40 @@ class GameViewModel : ViewModel() {
     private val _matrix = MutableStateFlow(Matrix())
     val matrix: StateFlow<Matrix> = _matrix.asStateFlow()
 
-    fun onClick(): Matrix {
-        val position = (0..15).random()
-        val value = 5
-        val arr = _matrix.value.array.map { it }.toMutableList()
-        if (arr[position] == null) {
-            arr[position] = value
-        }
+    fun swipeToRight(): Matrix {
+        val temporalArray = _matrix.value.array.map { it }.toMutableList()
+        Swipes().swipeToRight(temporalArray)
         _matrix.update {
-            it.matrixCopy(arr)
+            it.matrixCopy(temporalArray)
+        }
+        return _matrix.value
+    }
+
+    fun swipeToLeft(): Matrix {
+        val temporalArray = _matrix.value.array.map { it }.toMutableList()
+        Swipes().swipeToLeft(temporalArray)
+        _matrix.update {
+            it.matrixCopy(temporalArray)
         }
         return _matrix.value
     }
 
     fun newGame(): Matrix {
         _matrix.value.array.replaceAll {
-            null }
+            null
+        }
         val position = (0..15).random()
         val value = selectRandomDigit()
-        val arr = _matrix.value.array.map { it }.toMutableList()
-        arr[position] = value
+        val temporalArray = _matrix.value.array.map { it }.toMutableList()
+        temporalArray[position] = value
         _matrix.update {
-            it.matrixCopy(arr)
+            it.matrixCopy(temporalArray)
         }
         return _matrix.value
     }
 
-   private fun selectRandomDigit(): Int {
+    private fun selectRandomDigit(): Int {
         val a = (0..100).random()
-        return if (a<50) 2 else 4
+        return if (a < 75) 2 else 4
     }
 }

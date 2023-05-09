@@ -137,7 +137,8 @@ fun SwipeButtons(
             Button(
                 onClick = {
                     movesCount.value++
-                    Swipes().swipeToLeft()
+                    viewModel.swipeToLeft()
+                    Log.d("DDDDDD", "left ${viewModel.matrix.value.asMatrix().toString()}")
                 },
                 modifier = Modifier.padding(horizontal = 20.dp)
             ) {
@@ -146,9 +147,8 @@ fun SwipeButtons(
             Button(
                 onClick = {
                     movesCount.value++
-                    Swipes().swipeToRight()
-                    viewModel.onClick()
-                    Log.d("DDDDDD", viewModel.matrix.value.asMatrix().toString())
+                    viewModel.swipeToRight()
+                    Log.d("DDDDDD", "right ${viewModel.matrix.value.asMatrix().toString()}")
                 },
                 modifier = Modifier.padding(horizontal = 20.dp)
             ) {
