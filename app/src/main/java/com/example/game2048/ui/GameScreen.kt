@@ -129,7 +129,8 @@ fun SwipeButtons(
     ) {
         Button(onClick = {
             movesCount.value++
-            Swipes().swipeToUp()
+            viewModel.swipeToUp()
+            Log.d("DDDDDD", "up ${viewModel.matrix.value.asMatrix().toString()}")
         }) {
             Text(text = "UP")
         }

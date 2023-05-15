@@ -5,8 +5,41 @@ class Swipes {
 
     }
 
-    fun swipeToUp() {
-
+    // собрать все эдемениы вверху поля
+    fun swipeToUp(matrix: MutableList<Int?>): MutableList<Int?> {
+        val tempArr = mutableListOf<Int?>()
+        for (startIndex in 0 until matrix.size / ROWCOUNT) { // разделили на колонки
+            val endIndex = matrix.size - ROWCOUNT + startIndex // конец колонки
+            for (digit in startIndex..endIndex step ROWCOUNT) { //проверяем колонку
+                var summed = false
+                for (digit2 in digit + ROWCOUNT..endIndex step ROWCOUNT) {
+                    if (matrix[digit] != null && matrix[digit] == matrix[digit2]) {
+                        if (summed) {
+                            break // если суммирование уже произошло, то прерываем цикл
+                        }
+                        summed = true
+                        matrix[digit] = matrix[digit]!!.times(2) // удваиваем значение ячейки
+                        matrix[digit2] = null // обнуляем соседнюю ячейку
+                    }
+                }
+                // добавляем во временный массив числовые элементы
+                if (matrix[digit] != null) {
+                    tempArr.add(matrix[digit])
+                }
+            }
+            // проверяем длину временного массива и добавляем в его НИЗ null,
+            // если он короче длины исходного
+            while (tempArr.size < (ROWCOUNT * (startIndex + 1))) {
+                tempArr.add(null)
+            }
+        }
+        //записываем в старый массив новые значения в правильнои порядке
+        repeat(times = ROWCOUNT) { i ->
+            repeat(times = tempArr.size / ROWCOUNT) { k ->
+                matrix[i * ROWCOUNT + k] = tempArr[ROWCOUNT * k + i]
+            }
+        }
+        return matrix
     }
 
 

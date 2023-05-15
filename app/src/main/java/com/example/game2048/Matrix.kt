@@ -13,8 +13,8 @@ data class Matrix(
 
         null, 8192, 4096, 2048,
         1024, null, 256, 128,
-        8, 2, 2, 64,
-        4,2,2,null
+        8, 2, null, 2,
+        4,2,null,2
     )
 ) {
     fun matrixCopy(newArray: MutableList<Int?>): Matrix = Matrix().copy(
