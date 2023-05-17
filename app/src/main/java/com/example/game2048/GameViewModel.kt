@@ -11,6 +11,14 @@ class GameViewModel : ViewModel() {
     private val _matrix = MutableStateFlow(Matrix())
     val matrix: StateFlow<Matrix> = _matrix.asStateFlow()
 
+    fun swipeToDown(): Matrix {
+        val temporalArray = _matrix.value.array.map { it }.toMutableList()
+        Swipes().swipeToDown(temporalArray)
+        _matrix.update {
+            it.matrixCopy(temporalArray)
+        }
+        return _matrix.value
+    }
     fun swipeToUp(): Matrix {
         val temporalArray = _matrix.value.array.map { it }.toMutableList()
         Swipes().swipeToUp(temporalArray)
