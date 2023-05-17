@@ -45,7 +45,7 @@ fun ResizedText(
     text: String,
     style: TextStyle = TextStyle(fontSize = 50.sp)
 ) {
-    var resizedTextStyle by remember { mutableStateOf(style) }
+    var resizedTextStyle by remember (text) { mutableStateOf(style) }
 
     Text(
         text = text,

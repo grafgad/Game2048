@@ -1,9 +1,6 @@
 package com.example.game2048
 
 class Swipes {
-    fun newGame() {
-
-    }
 
     // собрать все элементы внизу поля
     fun swipeToDown(matrix: MutableList<Int?>): MutableList<Int?> {
@@ -11,9 +8,10 @@ class Swipes {
 
         for (startIndex in 0 until matrix.size / ROWCOUNT) { // разделили на колонки
             val endIndex = matrix.size - ROWCOUNT + startIndex // конец колонки
+
             for (digit in endIndex downTo startIndex step ROWCOUNT) { //проверяем колонку снизу вверх
-                println("digit $digit")
                 var summed = false
+
                 for (digit2 in digit - ROWCOUNT downTo startIndex step ROWCOUNT) {
                     if (matrix[digit] != null && matrix[digit] == matrix[digit2]) {
                         if (summed) {
@@ -40,7 +38,6 @@ class Swipes {
                     element = null
                 )
             }
-            println("tempArr $tempArr")
         }
         //записываем в старый массив новые значения в правильном порядке
         repeat(times = ROWCOUNT) { i ->
@@ -57,8 +54,10 @@ class Swipes {
 
         for (startIndex in 0 until matrix.size / ROWCOUNT) { // разделили на колонки
             val endIndex = matrix.size - ROWCOUNT + startIndex // конец колонки
+
             for (digit in startIndex..endIndex step ROWCOUNT) { //проверяем колонку сверху вниз
                 var summed = false
+
                 for (digit2 in digit + ROWCOUNT..endIndex step ROWCOUNT) {
                     if (matrix[digit] != null && matrix[digit] == matrix[digit2]) {
                         if (summed) {
@@ -97,8 +96,10 @@ class Swipes {
         for (line in 0 until matrix.size / ROWCOUNT) { // разделили на линии
             val startIndex = line * ROWCOUNT // начало линии
             val endIndex = startIndex + ROWCOUNT - 1 // конец линии
+
             for (digit in endIndex downTo startIndex) { // проверяем справа налево
                 var summed = false
+
                 for (digit2 in digit - 1 downTo startIndex) {
                     // сравнение соседних элементов линии
                     if (matrix[digit] == matrix[digit2] && matrix[digit] != null) {
@@ -146,6 +147,7 @@ class Swipes {
 
             for (digit in startIndex..endIndex) { // проходим по элементам линии
                 var summed = false
+
                 for (digit2 in digit + 1..endIndex) {
                     // сравнение соседних элементов линии
                     if (matrix[digit] == matrix[digit2] && matrix[digit] != null) {
@@ -174,6 +176,4 @@ class Swipes {
         }
         return matrix
     }
-
-
 }

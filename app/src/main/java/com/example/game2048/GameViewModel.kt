@@ -1,5 +1,6 @@
 package com.example.game2048
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,6 +15,7 @@ class GameViewModel : ViewModel() {
     fun swipeToDown(): Matrix {
         val temporalArray = _matrix.value.array.map { it }.toMutableList()
         Swipes().swipeToDown(temporalArray)
+        addNewDigit(temporalArray)
         _matrix.update {
             it.matrixCopy(temporalArray)
         }
@@ -22,6 +24,7 @@ class GameViewModel : ViewModel() {
     fun swipeToUp(): Matrix {
         val temporalArray = _matrix.value.array.map { it }.toMutableList()
         Swipes().swipeToUp(temporalArray)
+        addNewDigit(temporalArray)
         _matrix.update {
             it.matrixCopy(temporalArray)
         }
@@ -31,6 +34,7 @@ class GameViewModel : ViewModel() {
     fun swipeToRight(): Matrix {
         val temporalArray = _matrix.value.array.map { it }.toMutableList()
         Swipes().swipeToRight(temporalArray)
+        addNewDigit(temporalArray)
         _matrix.update {
             it.matrixCopy(temporalArray)
         }
@@ -40,12 +44,29 @@ class GameViewModel : ViewModel() {
     fun swipeToLeft(): Matrix {
         val temporalArray = _matrix.value.array.map { it }.toMutableList()
         Swipes().swipeToLeft(temporalArray)
+        addNewDigit(temporalArray)
         _matrix.update {
             it.matrixCopy(temporalArray)
         }
         return _matrix.value
     }
 
+    private fun addNewDigit(array: MutableList<Int?>): MutableList<Int?>? {
+        val tempArr = mutableListOf<Int>()
+        repeat(array.size) {
+            if (array[it] == null) {
+                tempArr.add(it)
+            }
+        }
+        if (tempArr.isNotEmpty()) {
+            val pos = tempArr.random()
+            array[pos] = selectRandomDigit()
+            Log.d("DDDDDD", "new digit at $pos position")
+        }
+        else return null
+
+        return array
+    }
     fun newGame(): Matrix {
         _matrix.value.array.replaceAll {
             null
@@ -62,6 +83,6 @@ class GameViewModel : ViewModel() {
 
     private fun selectRandomDigit(): Int {
         val a = (0..100).random()
-        return if (a < 75) 2 else 4
+        return if (a < 80) 2 else 4
     }
 }

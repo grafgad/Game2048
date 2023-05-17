@@ -3,19 +3,14 @@ package com.example.game2048
 const val ROWCOUNT = 4
 
 data class Matrix(
-    var emptyArr: MutableList<Int?> = arrayOfNulls<Int?>(16).toMutableList(),
+    var array: MutableList<Int?> = arrayOfNulls<Int?>(16).toMutableList(),
 
-    var array: MutableList<Int?> = mutableListOf(
-//        null, null, null, null,
-//        null, null, null, null,
-//        null, null, null, null,
-//        null, null, null, null
-
-        null, 8192, 4096, 2048,
-        1024, null, 256, 128,
-        8, 2, null, 2,
-        4,2,null,2
-    )
+//    var array: MutableList<Int?> = mutableListOf(
+//        null, 8192, 4096, 2048,
+//        1024, null, 256, 128,
+//        8, 2, null, 2,
+//        4,2,null,2
+//    )
 ) {
     fun matrixCopy(newArray: MutableList<Int?>): Matrix = Matrix().copy(
         array = newArray.toMutableList()
