@@ -43,7 +43,7 @@ fun Tile(
 @Composable
 fun ResizedText(
     text: String,
-    style: TextStyle = TextStyle(fontSize = 50.sp)
+    style: TextStyle = TextStyle(fontSize = 42.sp)
 ) {
     var resizedTextStyle by remember (text) { mutableStateOf(style) }
 

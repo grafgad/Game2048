@@ -1,6 +1,16 @@
 package com.example.game2048
 
-class Swipes {
+class Swipes(private val viewModel: GameViewModel) {
+
+    private fun compareDigits(
+        matrix: MutableList<Int?>,
+        digit: Int,
+        digit2: Int
+    ) {
+        matrix[digit] = matrix[digit]!!.times(2) // умножаем значение вдвое
+        matrix[digit2] = null // обнуляем соседнюю ячейку
+        viewModel.setMoveScore(matrix[digit]!!)
+    }
 
     // собрать все элементы внизу поля
     fun swipeToDown(matrix: MutableList<Int?>): MutableList<Int?> {
@@ -17,9 +27,8 @@ class Swipes {
                         if (summed) {
                             break // если суммирование уже произошло, то прерываем цикл
                         }
+                        compareDigits(matrix, digit, digit2)
                         summed = true
-                        matrix[digit] = matrix[digit]!!.times(2) // удваиваем значение ячейки
-                        matrix[digit2] = null // обнуляем соседнюю ячейку
                     }
                 }
                 // добавляем во временный массив числовые элементы
@@ -63,9 +72,8 @@ class Swipes {
                         if (summed) {
                             break // если суммирование уже произошло, то прерываем цикл
                         }
+                        compareDigits(matrix, digit, digit2)
                         summed = true
-                        matrix[digit] = matrix[digit]!!.times(2) // удваиваем значение ячейки
-                        matrix[digit2] = null // обнуляем соседнюю ячейку
                     }
                 }
                 // добавляем во временный массив числовые элементы
@@ -106,10 +114,8 @@ class Swipes {
                         if (summed) {
                             break // если суммирование уже произошло, то прерываем цикл
                         }
+                        compareDigits(matrix, digit, digit2)
                         summed = true
-                        matrix[digit] =
-                            matrix[digit]?.let { matrix[digit]?.plus(it) } // умножаем значение вдвое
-                        matrix[digit2] = null // обнуляем соседнюю ячейку
                     }
                 }
                 // добавляем во временный массив числовые элементы
@@ -148,15 +154,13 @@ class Swipes {
             for (digit in startIndex..endIndex) { // проходим по элементам линии
                 var summed = false
 
-                for (digit2 in digit + 1..endIndex) {
-                    // сравнение соседних элементов линии
+                for (digit2 in digit + 1..endIndex) { // сравнение соседних элементов линии
                     if (matrix[digit] == matrix[digit2] && matrix[digit] != null) {
                         if (summed) {
-                            break // усли суммирование уже произошло, то прерываем цикл
+                            break // если суммирование уже произошло, то прерываем цикл
                         }
+                        compareDigits(matrix, digit, digit2)
                         summed = true
-                        matrix[digit] = matrix[digit]!!.times(2) // умножаем значение вдвое
-                        matrix[digit2] = null // обнуляем соседнюю ячейку
                     }
                 }
                 // добавляем во временный массив числовые элементы

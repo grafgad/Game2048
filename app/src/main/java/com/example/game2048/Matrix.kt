@@ -1,16 +1,14 @@
 package com.example.game2048
 
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+
 const val ROWCOUNT = 4
 
 data class Matrix(
     var array: MutableList<Int?> = arrayOfNulls<Int?>(16).toMutableList(),
-
-//    var array: MutableList<Int?> = mutableListOf(
-//        null, 8192, 4096, 2048,
-//        1024, null, 256, 128,
-//        8, 2, null, 2,
-//        4,2,null,2
-//    )
+    var moves: MutableState<Int> = mutableStateOf(0),
+    var scores: MutableState<Int> = mutableStateOf(0)
 ) {
     fun matrixCopy(newArray: MutableList<Int?>): Matrix = Matrix().copy(
         array = newArray.toMutableList()
@@ -26,9 +24,5 @@ data class Matrix(
             outerList.add(innerList)
         }
         return outerList
-    }
-
-    operator fun set(index: Int, value: Int?) {
-        array[index] = value
     }
 }
