@@ -47,10 +47,6 @@ fun GameScreen(
             viewModel = viewModel
         )
         Arena(viewModel = viewModel)
-        SwipeButtons(
-            modifier,
-            viewModel
-        )
     }
 }
 
@@ -114,54 +110,6 @@ fun Buttons(
                     .rotate(90f)
             )
             Text(text = stringResource(id = R.string.start_new_game))
-        }
-    }
-}
-
-@Composable
-fun SwipeButtons(
-    modifier: Modifier = Modifier,
-    viewModel: GameViewModel,
-) {
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Button(
-            onClick = {
-                viewModel.swipeToUp()
-                Log.d("DDDDDD", "up ${viewModel.matrix.value.asMatrix()}")
-            }
-        ) {
-            Text(text = "UP")
-        }
-        Row {
-            Button(
-                onClick = {
-                    viewModel.swipeToLeft()
-                    Log.d("DDDDDD", "left ${viewModel.matrix.value.asMatrix()}")
-                },
-                modifier = Modifier.padding(horizontal = 20.dp)
-            ) {
-                Text(text = "LEFT")
-            }
-            Button(
-                onClick = {
-                    viewModel.swipeToRight()
-                    Log.d("DDDDDD", "right ${viewModel.matrix.value.asMatrix()}")
-                },
-                modifier = Modifier.padding(horizontal = 20.dp)
-            ) {
-                Text(text = "RIGHT")
-            }
-        }
-        Button(
-            onClick = {
-                viewModel.swipeToDown()
-                Log.d("DDDDDD", "down ${viewModel.matrix.value.asMatrix()}")
-            }
-        ) {
-            Text(text = "DOWN")
         }
     }
 }

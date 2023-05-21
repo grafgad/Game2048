@@ -9,20 +9,20 @@ import kotlinx.coroutines.flow.update
 
 class GameViewModel : ViewModel() {
 
-    private var _matrix = MutableStateFlow(Matrix())
-    val matrix: StateFlow<Matrix> = _matrix.asStateFlow()
+    private var _matrix = MutableStateFlow(Matrix()) // игровое поле с плитками
+    val matrix: StateFlow<Matrix> = _matrix.asStateFlow() // передача игрового поля в compose
 
-    private val _movesCount = MutableStateFlow(0)
-    val movesCount: StateFlow<Int> = _movesCount.asStateFlow()
+    private val _movesCount = MutableStateFlow(0) // подсчет хода
+    val movesCount: StateFlow<Int> = _movesCount.asStateFlow() // передача кол-ва ходов в compose
 
     private val lastMoveTilePosotions = MutableStateFlow(Matrix()) // предыдущий ход для возврата
     private var canUseUndo: Boolean = true
 
-    private var _gameScore = MutableStateFlow(0)
-    val gameScore: StateFlow<Int> = _gameScore.asStateFlow()
+    private var _gameScore = MutableStateFlow(0) // очки за ход во вьюмодели
+    val gameScore: StateFlow<Int> = _gameScore.asStateFlow() // передача очков в compose
 
-    private var moveScore = 0
-    private var previousMoveScore = 0
+    private var moveScore = 0 // число очков за ход
+    private var previousMoveScore = 0 //число очков для отмены хода
 
 
     fun setMoveScore(a: Int) {
