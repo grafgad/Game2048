@@ -11,9 +11,8 @@ import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -26,55 +25,53 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.game2048.GameViewModel
 import com.example.game2048.R
-import com.example.game2048.Swipes
 
 @Composable
 fun GameScreen(
     modifier: Modifier = Modifier,
-    movesCount: Int = 0,
     viewModel: GameViewModel = viewModel()
 ) {
-    val moves = remember {
-        mutableStateOf(movesCount)
-    }
+    val movesCount = viewModel.movesCount.collectAsState().value
+    val scores by viewModel.gameScore.collectAsState()
     Column(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center
     ) {
         Statistics(
             modifier = Modifier,
-            movesCount = moves
+            movesCount = movesCount,
+            scores = scores
         )
         Buttons(
             modifier = Modifier,
-            viewModel = viewModel,
-            movesCount = moves
+            viewModel = viewModel
         )
         Arena(viewModel = viewModel)
-        SwipeButtons(
-            modifier,
-            viewModel,
-            movesCount = moves
-        )
     }
 }
 
 @Composable
 fun Statistics(
     modifier: Modifier = Modifier,
-    movesCount: MutableState<Int>,
+    movesCount: Int,
+    scores: Int
 ) {
+
     Row(
         modifier = modifier
             .fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceAround
     ) {
         Text(
-            text = (stringResource(id = R.string.moves) + movesCount.value.toString()),
+            text = (stringResource(id = R.string.moves) + movesCount.toString()),
             modifier = Modifier.padding(2.dp),
             fontSize = 20.sp,
         )
-        Text(text = "Scores")
+        Text(
+            text = (stringResource(id = R.string.scores) + scores.toString()),
+            modifier = Modifier.padding(2.dp),
+            fontSize = 20.sp,
+        )
     }
 }
 
@@ -82,7 +79,6 @@ fun Statistics(
 fun Buttons(
     modifier: Modifier = Modifier,
     viewModel: GameViewModel,
-    movesCount: MutableState<Int>,
 ) {
 
     Row(
@@ -92,7 +88,8 @@ fun Buttons(
     ) {
         Button(
             onClick = {
-                movesCount.value--
+                viewModel.undoMove()
+                Log.d("DDDDDD", "undo ${viewModel.matrix.value.asMatrix()}")
             },
         ) {
             Icon(
@@ -101,7 +98,7 @@ fun Buttons(
             )
         }
         Button(
-            {
+            onClick = {
                 viewModel.newGame()
             }
         ) {
@@ -115,55 +112,6 @@ fun Buttons(
             Text(text = stringResource(id = R.string.start_new_game))
         }
     }
-}
-
-@Composable
-fun SwipeButtons(
-    modifier: Modifier = Modifier,
-    viewModel: GameViewModel,
-    movesCount: MutableState<Int>,
-) {
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Button(onClick = {
-            movesCount.value++
-            viewModel.swipeToUp()
-            Log.d("DDDDDD", "up ${viewModel.matrix.value.asMatrix().toString()}")
-        }) {
-            Text(text = "UP")
-        }
-        Row {
-            Button(
-                onClick = {
-                    movesCount.value++
-                    viewModel.swipeToLeft()
-                    Log.d("DDDDDD", "left ${viewModel.matrix.value.asMatrix().toString()}")
-                },
-                modifier = Modifier.padding(horizontal = 20.dp)
-            ) {
-                Text(text = "LEFT")
-            }
-            Button(
-                onClick = {
-                    movesCount.value++
-                    viewModel.swipeToRight()
-                    Log.d("DDDDDD", "right ${viewModel.matrix.value.asMatrix().toString()}")
-                },
-                modifier = Modifier.padding(horizontal = 20.dp)
-            ) {
-                Text(text = "RIGHT")
-            }
-        }
-        Button(onClick = {
-            movesCount.value++
-            Swipes().swipeToDown()
-        }) {
-            Text(text = "DOWN")
-        }
-    }
-
 }
 
 @Preview

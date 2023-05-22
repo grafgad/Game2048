@@ -1,46 +1,67 @@
 package com.example.game2048.ui
 
+import android.util.Log
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.rememberSwipeableState
-import androidx.compose.runtime.*
+import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.game2048.GameViewModel
 import com.example.game2048.ROWCOUNT
 import com.example.game2048.ui.theme.GameColors
 
-enum class States {
-    RIGHT,
-    LEFT,
-    UP,
-    DOWN
-}
-
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun Arena(
     modifier: Modifier = Modifier,
     viewModel: GameViewModel
 ) {
-    val swipeableState = rememberSwipeableState(initialValue = 0)
-    val direction = 0f/*TODO: переделать для направления*/
-
+    var offsetX by remember { mutableStateOf(0f) }
+    var offsetY by remember { mutableStateOf(0f) }
+    var direction by remember { mutableStateOf(0) }
     Box(
         modifier = modifier
             .padding(16.dp)
             .aspectRatio(1f)
             .background(GameColors.Grey)
-//            .swipeable(
-//                state = swipeableState,
-//                anchors = mapOf(
-//                    0f to 0,
-//                    direction to 1
-//                ),/*TODO: доделать*/
-//                orientation = Orientation.Horizontal,/*TODO: сделать для 4-х направлений*/
-//            )
+            .pointerInput(Unit) {
+                detectDragGestures(
+                    onDragEnd = {
+                        selesctSwipeDirection(
+                            direction, viewModel
+                        )
+                    },
+                    onDrag = { change, dragAmount ->
+                        change.consume()
+                        val (x, y) = dragAmount
+                        when {
+                            x > 0 -> { direction = 1 } // RIGHT
+                            x < 0 -> { direction = 2 } // LEFT
+                        }
+                        when {
+                            y > 0 -> { direction = 4 } // DOWN
+                            y < 0 -> { direction = 3 } // UP
+                        }
+                        offsetX += dragAmount.x
+                        offsetY += dragAmount.y
+                    },
+                    onDragStart = {},
+                    onDragCancel = {}
+                )
+            }
     ) {
         val vmMatrix by viewModel.matrix.collectAsState()
         Column {
@@ -75,7 +96,6 @@ fun HorizontalFields(
     }
 }
 
-
 @Preview(widthDp = 200, heightDp = 320)
 @Composable
 fun ArenaPreview320() {
@@ -86,4 +106,25 @@ fun ArenaPreview320() {
 @Composable
 fun ArenaPReview() {
     Arena(viewModel = GameViewModel())
+}
+
+fun selesctSwipeDirection(direction: Int, viewModel: GameViewModel) {
+    when (direction) {
+        1 -> {
+            viewModel.swipeToRight()
+            Log.d("swipes", "Arena: RIGHT")
+        }
+        2 -> {
+            viewModel.swipeToLeft()
+            Log.d("swipes", "Arena: LEFT")
+        }
+        3 -> {
+            viewModel.swipeToUp()
+            Log.d("swipes", "Arena: UP")
+        }
+        4 -> {
+            viewModel.swipeToDown()
+            Log.d("swipes", "Arena: DOWN")
+        }
+    }
 }

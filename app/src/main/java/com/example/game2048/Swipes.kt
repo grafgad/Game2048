@@ -1,25 +1,79 @@
 package com.example.game2048
 
-class Swipes {
-    fun newGame() {
+class Swipes(private val viewModel: GameViewModel) {
 
+    private fun compareDigits(
+        matrix: MutableList<Int?>,
+        digit: Int,
+        digit2: Int
+    ) {
+        matrix[digit] = matrix[digit]!!.times(2) // умножаем значение вдвое
+        matrix[digit2] = null // обнуляем соседнюю ячейку
+        viewModel.setMoveScore(matrix[digit]!!)
     }
 
-    // собрать все эдемениы вверху поля
-    fun swipeToUp(matrix: MutableList<Int?>): MutableList<Int?> {
+    // собрать все элементы внизу поля
+    fun swipeToDown(matrix: MutableList<Int?>): MutableList<Int?> {
         val tempArr = mutableListOf<Int?>()
+
         for (startIndex in 0 until matrix.size / ROWCOUNT) { // разделили на колонки
             val endIndex = matrix.size - ROWCOUNT + startIndex // конец колонки
-            for (digit in startIndex..endIndex step ROWCOUNT) { //проверяем колонку
+
+            for (digit in endIndex downTo startIndex step ROWCOUNT) { //проверяем колонку снизу вверх
                 var summed = false
+
+                for (digit2 in digit - ROWCOUNT downTo startIndex step ROWCOUNT) {
+                    if (matrix[digit] != null && matrix[digit] == matrix[digit2]) {
+                        if (summed) {
+                            break // если суммирование уже произошло, то прерываем цикл
+                        }
+                        compareDigits(matrix, digit, digit2)
+                        summed = true
+                    }
+                }
+                // добавляем во временный массив числовые элементы
+                if (matrix[digit] != null) {
+                    tempArr.add(
+                        index = ROWCOUNT * startIndex,
+                        element = matrix[digit]
+                    )
+                }
+            }
+            // проверяем длину временного массива и добавляем в его ВЕРХ null,
+            // если он короче длины исходного
+            while (tempArr.size < (ROWCOUNT * (startIndex + 1))) {
+                tempArr.add(
+                    index = ROWCOUNT * startIndex,
+                    element = null
+                )
+            }
+        }
+        //записываем в старый массив новые значения в правильном порядке
+        repeat(times = ROWCOUNT) { i ->
+            repeat(times = ROWCOUNT) { k ->
+                matrix[i * ROWCOUNT + k] = tempArr[ROWCOUNT * k + i]
+            }
+        }
+        return matrix
+    }
+
+    // собрать все элементы вверху поля
+    fun swipeToUp(matrix: MutableList<Int?>): MutableList<Int?> {
+        val tempArr = mutableListOf<Int?>()
+
+        for (startIndex in 0 until matrix.size / ROWCOUNT) { // разделили на колонки
+            val endIndex = matrix.size - ROWCOUNT + startIndex // конец колонки
+
+            for (digit in startIndex..endIndex step ROWCOUNT) { //проверяем колонку сверху вниз
+                var summed = false
+
                 for (digit2 in digit + ROWCOUNT..endIndex step ROWCOUNT) {
                     if (matrix[digit] != null && matrix[digit] == matrix[digit2]) {
                         if (summed) {
                             break // если суммирование уже произошло, то прерываем цикл
                         }
+                        compareDigits(matrix, digit, digit2)
                         summed = true
-                        matrix[digit] = matrix[digit]!!.times(2) // удваиваем значение ячейки
-                        matrix[digit2] = null // обнуляем соседнюю ячейку
                     }
                 }
                 // добавляем во временный массив числовые элементы
@@ -33,9 +87,9 @@ class Swipes {
                 tempArr.add(null)
             }
         }
-        //записываем в старый массив новые значения в правильнои порядке
+        //записываем в старый массив новые значения в правильном порядке
         repeat(times = ROWCOUNT) { i ->
-            repeat(times = tempArr.size / ROWCOUNT) { k ->
+            repeat(times = ROWCOUNT) { k ->
                 matrix[i * ROWCOUNT + k] = tempArr[ROWCOUNT * k + i]
             }
         }
@@ -45,24 +99,23 @@ class Swipes {
 
     // собрать элементы с цифрами в конце
     fun swipeToRight(matrix: MutableList<Int?>): MutableList<Int?> {
-
         val tempArr = mutableListOf<Int?>()
 
         for (line in 0 until matrix.size / ROWCOUNT) { // разделили на линии
             val startIndex = line * ROWCOUNT // начало линии
             val endIndex = startIndex + ROWCOUNT - 1 // конец линии
+
             for (digit in endIndex downTo startIndex) { // проверяем справа налево
                 var summed = false
+
                 for (digit2 in digit - 1 downTo startIndex) {
                     // сравнение соседних элементов линии
                     if (matrix[digit] == matrix[digit2] && matrix[digit] != null) {
                         if (summed) {
                             break // если суммирование уже произошло, то прерываем цикл
                         }
+                        compareDigits(matrix, digit, digit2)
                         summed = true
-                        matrix[digit] =
-                            matrix[digit]?.let { matrix[digit]?.plus(it) } // умножаем значение вдвое
-                        matrix[digit2] = null // обнуляем соседнюю ячейку
                     }
                 }
                 // добавляем во временный массив числовые элементы
@@ -100,15 +153,14 @@ class Swipes {
 
             for (digit in startIndex..endIndex) { // проходим по элементам линии
                 var summed = false
-                for (digit2 in digit + 1..endIndex) {
-                    // сравнение соседних элементов линии
+
+                for (digit2 in digit + 1..endIndex) { // сравнение соседних элементов линии
                     if (matrix[digit] == matrix[digit2] && matrix[digit] != null) {
                         if (summed) {
-                            break // усли суммирование уже произошло, то прерываем цикл
+                            break // если суммирование уже произошло, то прерываем цикл
                         }
+                        compareDigits(matrix, digit, digit2)
                         summed = true
-                        matrix[digit] = matrix[digit]!!.times(2) // умножаем значение вдвое
-                        matrix[digit2] = null // обнуляем соседнюю ячейку
                     }
                 }
                 // добавляем во временный массив числовые элементы
@@ -127,8 +179,5 @@ class Swipes {
             matrix[position] = tempArr[position]
         }
         return matrix
-    }
-
-    fun swipeToDown() {
     }
 }
