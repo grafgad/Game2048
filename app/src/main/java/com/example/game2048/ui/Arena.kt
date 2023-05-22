@@ -31,7 +31,7 @@ fun Arena(
 ) {
     var offsetX by remember { mutableStateOf(0f) }
     var offsetY by remember { mutableStateOf(0f) }
-    var dir by remember { mutableStateOf(0) }
+    var direction by remember { mutableStateOf(0) }
     Box(
         modifier = modifier
             .padding(16.dp)
@@ -40,35 +40,20 @@ fun Arena(
             .pointerInput(Unit) {
                 detectDragGestures(
                     onDragEnd = {
-                        when (dir) {
-                            1 -> {
-                                viewModel.swipeToRight()
-                                Log.d("swipes", "Arena: RIGHT")
-                            }
-                            2 -> {
-                                viewModel.swipeToLeft()
-                                Log.d("swipes", "Arena: LEFT")
-                            }
-                            3 -> {
-                                viewModel.swipeToUp()
-                                Log.d("swipes", "Arena: UP")
-                            }
-                            4 -> {
-                                viewModel.swipeToDown()
-                                Log.d("swipes", "Arena: DOWN")
-                            }
-                        }
+                        selesctSwipeDirection(
+                            direction, viewModel
+                        )
                     },
                     onDrag = { change, dragAmount ->
                         change.consume()
                         val (x, y) = dragAmount
                         when {
-                            x > 0 -> { dir = 1 } // RIGHT
-                            x < 0 -> { dir = 2 } // LEFT
+                            x > 0 -> { direction = 1 } // RIGHT
+                            x < 0 -> { direction = 2 } // LEFT
                         }
                         when {
-                            y > 0 -> { dir = 4 } // DOWN
-                            y < 0 -> { dir = 3 } // UP
+                            y > 0 -> { direction = 4 } // DOWN
+                            y < 0 -> { direction = 3 } // UP
                         }
                         offsetX += dragAmount.x
                         offsetY += dragAmount.y
@@ -121,4 +106,25 @@ fun ArenaPreview320() {
 @Composable
 fun ArenaPReview() {
     Arena(viewModel = GameViewModel())
+}
+
+fun selesctSwipeDirection(direction: Int, viewModel: GameViewModel) {
+    when (direction) {
+        1 -> {
+            viewModel.swipeToRight()
+            Log.d("swipes", "Arena: RIGHT")
+        }
+        2 -> {
+            viewModel.swipeToLeft()
+            Log.d("swipes", "Arena: LEFT")
+        }
+        3 -> {
+            viewModel.swipeToUp()
+            Log.d("swipes", "Arena: UP")
+        }
+        4 -> {
+            viewModel.swipeToDown()
+            Log.d("swipes", "Arena: DOWN")
+        }
+    }
 }
