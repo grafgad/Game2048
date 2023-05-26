@@ -1,14 +1,9 @@
 package com.example.game2048
 
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-
 const val ROWCOUNT = 4
 
 data class Matrix(
-    var array: MutableList<Int?> = arrayOfNulls<Int?>(16).toMutableList(),
-    var moves: MutableState<Int> = mutableStateOf(0),
-    var scores: MutableState<Int> = mutableStateOf(0)
+    var array: MutableList<Int?> = arrayOfNulls<Int?>(16).toMutableList()
 ) {
     fun matrixCopy(newArray: MutableList<Int?>): Matrix = Matrix().copy(
         array = newArray.toMutableList()

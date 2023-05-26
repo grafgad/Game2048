@@ -9,82 +9,68 @@ import kotlinx.coroutines.flow.update
 
 class GameViewModel : ViewModel() {
 
-    private var _matrix = MutableStateFlow(Matrix()) // игровое поле с плитками
-    val matrix: StateFlow<Matrix> = _matrix.asStateFlow() // передача игрового поля в compose
+    private var _game = MutableStateFlow(Game())
+    val game: StateFlow<Game> = _game.asStateFlow()
 
-    private val _movesCount = MutableStateFlow(0) // подсчет хода
-    val movesCount: StateFlow<Int> = _movesCount.asStateFlow() // передача кол-ва ходов в compose
-
-    private val lastMoveTilePosotions = MutableStateFlow(Matrix()) // предыдущий ход для возврата
+    private val lastMoveTilePosotions = MutableStateFlow(Game()) // предыдущий ход для возврата
     private var canUseUndo: Boolean = true
-
-    private var _gameScore = MutableStateFlow(0) // очки за ход во вьюмодели
-    val gameScore: StateFlow<Int> = _gameScore.asStateFlow() // передача очков в compose
 
     private var moveScore = 0 // число очков за ход
     private var previousMoveScore = 0 //число очков для отмены хода
 
 
     fun setMoveScore(a: Int) {
-        moveScore = a
+        moveScore += a // если за ход несколько плиток суммируется, то нужна вся сумма.
         previousMoveScore = a
     }
 
-    private fun updateScores() {
-        _gameScore.update {
-            _gameScore.value.plus(moveScore)
-        }
-        moveScore = 0
-    }
-
     private fun usualMove(array: MutableList<Int?>) {
-        lastMoveTilePosotions.value = _matrix.value
-        updateScores()
+        lastMoveTilePosotions.value = _game.value
         addNewDigit(array)
-        _matrix.update {
-            it.matrixCopy(array)
+        _game.update { game ->
+            game.copy(
+                matrix = _game.value.matrix.matrixCopy(array),
+                score = _game.value.score.plus(moveScore),
+                move = _game.value.move.plus(1),
+            )
         }
-        _movesCount.value++
         canUseUndo = true
-        Log.d("moves", "newScore = $moveScore")
-        Log.d("moves", "_gameScore = ${_gameScore.value}")
+        moveScore = 0
+        Log.d("moves", "newScore =  ${_game.value.move}")
+        Log.d("moves", "_gameScore = ${_game.value.score}")
     }
 
     fun undoMove() {
         if (canUseUndo) {
-            _matrix.value = lastMoveTilePosotions.value
-            _movesCount.value--
-            _gameScore.value -= previousMoveScore
+            _game.value = lastMoveTilePosotions.value
+            _game.value.move.minus(1)
+            _game.value.score.minus(previousMoveScore)
             canUseUndo = false
         }
     }
 
-    fun swipeToDown(): Matrix {
-        val temporalArray = _matrix.value.array.map { it }.toMutableList()
-        Swipes(this).swipeToDown(temporalArray)
+    fun swipeToDirection(direction: Directions): Game {
+        val temporalArray = game.value.matrix.array.map { it }.toMutableList()
+        when (direction) {
+            Directions.RIGHT -> {
+                Swipes(this).swipeToRight(temporalArray)
+                Log.d("swipes", "Arena: RIGHT")
+            }
+            Directions.LEFT -> {
+                Swipes(this).swipeToLeft(temporalArray)
+                Log.d("swipes", "Arena: LEFT")
+            }
+            Directions.UP -> {
+                Swipes(this).swipeToUp(temporalArray)
+                Log.d("swipes", "Arena: UP")
+            }
+            Directions.DOWN -> {
+                Swipes(this).swipeToDown(temporalArray)
+                Log.d("swipes", "Arena: DOWN")
+            }
+        }
         usualMove(temporalArray)
-        return _matrix.value
-    }
-
-    fun swipeToUp(): Matrix {
-        val temporalArray = _matrix.value.array.map { it }.toMutableList()
-        Swipes(this).swipeToUp(temporalArray)
-        usualMove(temporalArray)
-        return _matrix.value
-    }
-
-    fun swipeToRight(): Matrix {
-        val temporalArray = _matrix.value.array.map { it }.toMutableList()
-        Swipes(this).swipeToRight(temporalArray)
-        usualMove(temporalArray)
-        return _matrix.value
-    }
-
-    fun swipeToLeft(): Matrix {
-        val temporalArray = _matrix.value.array.map { it }.toMutableList()
-        Swipes(this).swipeToLeft(temporalArray)
-        usualMove(temporalArray)
-        return _matrix.value
+        return _game.value
     }
 
     private fun addNewDigit(array: MutableList<Int?>): MutableList<Int?>? {
@@ -99,25 +85,25 @@ class GameViewModel : ViewModel() {
             array[pos] = selectRandomDigit()
             Log.d("DDDDDD", "New digit at $pos position")
         } else return null
-
         return array
     }
 
-    fun newGame(): Matrix {
-        _matrix.value.array.replaceAll {
+    fun newGame(): Game {
+        val position = (0 until _game.value.matrix.array.size).random()
+        val value = selectRandomDigit()
+        val temporalArray = _game.value.matrix.array.map { it }.toMutableList()
+        _game.value.matrix.array.replaceAll {
             null
         }
-        val position = (0 until _matrix.value.array.size).random()
-        val value = selectRandomDigit()
-        val temporalArray = _matrix.value.array.map { it }.toMutableList()
         temporalArray[position] = value
-        _matrix.update {
-            it.matrixCopy(temporalArray)
+        _game.update { game ->
+            game.copy(
+                matrix = game.matrix.matrixCopy(temporalArray),
+                score = 0,
+                move = 0
+            )
         }
-        _gameScore.value = 0
-        moveScore = 0
-        _movesCount.value = 0
-        return _matrix.value
+        return _game.value
     }
 
     private fun selectRandomDigit(): Int {

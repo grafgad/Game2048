@@ -31,16 +31,15 @@ fun GameScreen(
     modifier: Modifier = Modifier,
     viewModel: GameViewModel = viewModel()
 ) {
-    val movesCount = viewModel.movesCount.collectAsState().value
-    val scores by viewModel.gameScore.collectAsState()
+    val gameStats by viewModel.game.collectAsState()
     Column(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center
     ) {
         Statistics(
             modifier = Modifier,
-            movesCount = movesCount,
-            scores = scores
+            movesCount = gameStats.move,
+            scores = gameStats.score
         )
         Buttons(
             modifier = Modifier,
@@ -89,7 +88,7 @@ fun Buttons(
         Button(
             onClick = {
                 viewModel.undoMove()
-                Log.d("DDDDDD", "undo ${viewModel.matrix.value.asMatrix()}")
+                Log.d("DDDDDD", "undo ${viewModel.game.value.matrix.asMatrix()}")
             },
         ) {
             Icon(
