@@ -1,6 +1,5 @@
 package com.example.game2048.ui
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -20,18 +19,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.game2048.Directions
 import com.example.game2048.GameViewModel
 import com.example.game2048.ROWCOUNT
 import com.example.game2048.ui.theme.GameColors
+import kotlin.math.abs
 
 @Composable
 fun Arena(
     modifier: Modifier = Modifier,
     viewModel: GameViewModel
 ) {
-    var offsetX by remember { mutableStateOf(0f) }
-    var offsetY by remember { mutableStateOf(0f) }
-    var direction by remember { mutableStateOf(0) }
+    var direction by remember { mutableStateOf(Directions.UP) }
     Box(
         modifier = modifier
             .padding(16.dp)
@@ -39,36 +38,30 @@ fun Arena(
             .background(GameColors.Grey)
             .pointerInput(Unit) {
                 detectDragGestures(
-                    onDragEnd = {
-                        selesctSwipeDirection(
-                            direction, viewModel
-                        )
-                    },
                     onDrag = { change, dragAmount ->
                         change.consume()
                         val (x, y) = dragAmount
                         when {
-                            x > 0 -> { direction = 1 } // RIGHT
-                            x < 0 -> { direction = 2 } // LEFT
+                            x > 5 && abs(x) > abs(y) -> { direction = Directions.RIGHT } // RIGHT
+                            x < -5 && abs(x) > abs(y) -> { direction = Directions.LEFT } // LEFT
+                            y > 5 && abs(x) < abs(y) -> { direction = Directions.DOWN } // DOWN
+                            y < -5 && abs(x) < abs(y) -> { direction = Directions.UP } // UP
                         }
-                        when {
-                            y > 0 -> { direction = 4 } // DOWN
-                            y < 0 -> { direction = 3 } // UP
-                        }
-                        offsetX += dragAmount.x
-                        offsetY += dragAmount.y
+                    },
+                    onDragEnd = {
+                                viewModel.swipeToDirection(direction)
                     },
                     onDragStart = {},
                     onDragCancel = {}
                 )
             }
     ) {
-        val vmMatrix by viewModel.matrix.collectAsState()
+        val vmMatrix by viewModel.game.collectAsState()
         Column {
             repeat(ROWCOUNT) { row ->
                 HorizontalFields(
                     modifier = Modifier,
-                    value = vmMatrix.asMatrix()[row]
+                    value = vmMatrix.matrix.asMatrix()[row]
                 )
             }
         }
@@ -106,25 +99,4 @@ fun ArenaPreview320() {
 @Composable
 fun ArenaPReview() {
     Arena(viewModel = GameViewModel())
-}
-
-fun selesctSwipeDirection(direction: Int, viewModel: GameViewModel) {
-    when (direction) {
-        1 -> {
-            viewModel.swipeToRight()
-            Log.d("swipes", "Arena: RIGHT")
-        }
-        2 -> {
-            viewModel.swipeToLeft()
-            Log.d("swipes", "Arena: LEFT")
-        }
-        3 -> {
-            viewModel.swipeToUp()
-            Log.d("swipes", "Arena: UP")
-        }
-        4 -> {
-            viewModel.swipeToDown()
-            Log.d("swipes", "Arena: DOWN")
-        }
-    }
 }
