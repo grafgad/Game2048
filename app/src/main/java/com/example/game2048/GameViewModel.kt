@@ -18,35 +18,9 @@ class GameViewModel : ViewModel() {
     private var moveScore = 0 // число очков за ход
     private var previousMoveScore = 0 //число очков для отмены хода
 
-
     fun setMoveScore(a: Int) {
-        moveScore += a // если за ход несколько плиток суммируется, то нужна вся сумма.
+        moveScore += a // если за ход несколько плиток суммируется, то нужна их сумма.
         previousMoveScore = a
-    }
-
-    private fun usualMove(array: MutableList<Int?>) {
-        lastMoveTilePosotions.value = _game.value
-        addNewDigit(array)
-        _game.update { game ->
-            game.copy(
-                matrix = _game.value.matrix.matrixCopy(array),
-                score = _game.value.score.plus(moveScore),
-                move = _game.value.move.plus(1),
-            )
-        }
-        canUseUndo = true
-        moveScore = 0
-        Log.d("moves", "newScore =  ${_game.value.move}")
-        Log.d("moves", "_gameScore = ${_game.value.score}")
-    }
-
-    fun undoMove() {
-        if (canUseUndo) {
-            _game.value = lastMoveTilePosotions.value
-            _game.value.move.minus(1)
-            _game.value.score.minus(previousMoveScore)
-            canUseUndo = false
-        }
     }
 
     fun swipeToDirection(direction: Directions): Game {
@@ -70,7 +44,28 @@ class GameViewModel : ViewModel() {
             }
         }
         usualMove(temporalArray)
+        gameOver()
         return _game.value
+    }
+
+    private fun usualMove(array: MutableList<Int?>) {
+//        if (array.containsAll(lastMoveTilePosotions.value.matrix.array)){
+//            Log.d("moves", "swipeToDirection: SAME ARRAY")
+//            return
+//        }
+        lastMoveTilePosotions.value = _game.value
+        addNewDigit(array)
+        _game.update { game ->
+            game.copy(
+                matrix = _game.value.matrix.matrixCopy(array),
+                score = _game.value.score.plus(moveScore),
+                move = _game.value.move.plus(1),
+            )
+        }
+        canUseUndo = true
+        moveScore = 0
+        Log.d("moves", "newScore =  ${_game.value.move}")
+        Log.d("moves", "_gameScore = ${_game.value.score}")
     }
 
     private fun addNewDigit(array: MutableList<Int?>): MutableList<Int?>? {
@@ -83,7 +78,7 @@ class GameViewModel : ViewModel() {
         if (tempArr.isNotEmpty()) {
             val pos = tempArr.random()
             array[pos] = selectRandomDigit()
-            Log.d("DDDDDD", "New digit at $pos position")
+            Log.d("new digit", "New digit at $pos position")
         } else return null
         return array
     }
@@ -91,14 +86,14 @@ class GameViewModel : ViewModel() {
     fun newGame(): Game {
         val position = (0 until _game.value.matrix.array.size).random()
         val value = selectRandomDigit()
-        val temporalArray = _game.value.matrix.array.map { it }.toMutableList()
         _game.value.matrix.array.replaceAll {
             null
         }
+        val temporalArray = _game.value.matrix.array.map { it }.toMutableList()
         temporalArray[position] = value
         _game.update { game ->
             game.copy(
-                matrix = game.matrix.matrixCopy(temporalArray),
+                matrix = _game.value.matrix.matrixCopy(temporalArray),
                 score = 0,
                 move = 0
             )
@@ -109,5 +104,28 @@ class GameViewModel : ViewModel() {
     private fun selectRandomDigit(): Int {
         val a = (0..100).random()
         return if (a < 85) 2 else 4
+    }
+
+    fun undoMove() {
+        if (canUseUndo) {
+            _game.value = lastMoveTilePosotions.value
+            _game.value.move.minus(1)
+            _game.value.score.minus(previousMoveScore)
+            canUseUndo = false
+        }
+    }
+
+    private fun gameOver() {
+        if (!_game.value.matrix.array.contains(null)) {
+            if (
+                swipeToDirection(Directions.RIGHT) == swipeToDirection(Directions.LEFT) &&
+                swipeToDirection(Directions.UP) == swipeToDirection(Directions.DOWN)
+            ) {
+                Log.d("moves", "GAME OVER")
+                println("GAME OVER")
+            }
+        }
+
+
     }
 }
