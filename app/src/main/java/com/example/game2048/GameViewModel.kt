@@ -20,7 +20,6 @@ class GameViewModel : ViewModel() {
 
     fun setMoveScore(a: Int) {
         moveScore += a // если за ход несколько плиток суммируется, то нужна их сумма.
-        previousMoveScore = a
     }
 
     fun swipeToDirection(direction: Directions): Game {
@@ -30,14 +29,17 @@ class GameViewModel : ViewModel() {
                 Swipes(this).swipeToRight(temporalArray)
                 Log.d("swipes", "Arena: RIGHT")
             }
+
             Directions.LEFT -> {
                 Swipes(this).swipeToLeft(temporalArray)
                 Log.d("swipes", "Arena: LEFT")
             }
+
             Directions.UP -> {
                 Swipes(this).swipeToUp(temporalArray)
                 Log.d("swipes", "Arena: UP")
             }
+
             Directions.DOWN -> {
                 Swipes(this).swipeToDown(temporalArray)
                 Log.d("swipes", "Arena: DOWN")
@@ -63,6 +65,7 @@ class GameViewModel : ViewModel() {
             )
         }
         canUseUndo = true
+        previousMoveScore = moveScore
         moveScore = 0
         Log.d("moves", "newScore =  ${_game.value.move}")
         Log.d("moves", "_gameScore = ${_game.value.score}")
@@ -98,6 +101,7 @@ class GameViewModel : ViewModel() {
                 move = 0
             )
         }
+        previousMoveScore = 0
         return _game.value
     }
 
@@ -106,13 +110,18 @@ class GameViewModel : ViewModel() {
         return if (a < 85) 2 else 4
     }
 
-    fun undoMove() {
+    fun undoMove(): Game {
         if (canUseUndo) {
-            _game.value = lastMoveTilePosotions.value
-            _game.value.move.minus(1)
-            _game.value.score.minus(previousMoveScore)
+            _game.update {
+                it.copy(
+                    matrix = lastMoveTilePosotions.value.matrix,
+                    score = lastMoveTilePosotions.value.score, //_game.value.score.minus(previousMoveScore),
+                    move = lastMoveTilePosotions.value.move //_game.value.move.minus(1)
+                )
+            }
             canUseUndo = false
         }
+        return _game.value
     }
 
     private fun gameOver() {
@@ -125,7 +134,5 @@ class GameViewModel : ViewModel() {
                 println("GAME OVER")
             }
         }
-
-
     }
 }
