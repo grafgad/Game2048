@@ -18,6 +18,9 @@ class GameViewModel : ViewModel() {
     private var moveScore = 0 // число очков за ход
     private var previousMoveScore = 0 //число очков для отмены хода
 
+    private var _gameOver = MutableStateFlow(false)
+    val gameOver: StateFlow<Boolean> = _gameOver
+
     fun setMoveScore(a: Int) {
         moveScore += a // если за ход несколько плиток суммируется, то нужна их сумма.
     }
@@ -27,7 +30,6 @@ class GameViewModel : ViewModel() {
         swipeToDirection(direction, temporalArray)
         usualMove(temporalArray)
         return _game.value
-
     }
 
     private fun swipeToDirection(
@@ -59,7 +61,7 @@ class GameViewModel : ViewModel() {
     }
 
     private fun usualMove(array: MutableList<Int?>) {
-        if (isMovePossible(array)) {
+        if (noTilesChange(array)) {
             return
         }
         lastMoveTilePosotions.value = _game.value
@@ -74,14 +76,15 @@ class GameViewModel : ViewModel() {
         canUseUndo = true
         previousMoveScore = moveScore
         moveScore = 0
+        canContinue(_game.value.matrix.array)
         Log.d("moves", "move =  ${_game.value.move}")
         Log.d("moves", "_gameScore = ${_game.value.score}")
     }
 
-    private fun isMovePossible(temporalArray: MutableList<Int?>): Boolean {
+    private fun noTilesChange(temporalArray: MutableList<Int?>): Boolean {
         val array = _game.value.matrix.array
         if (temporalArray == array) {
-            Log.d("moves", "isMovePossible: NO CHANGE")
+            Log.d("moves", "noTilesChange: NO CHANGE")
             return true
         }
         return false
@@ -103,6 +106,9 @@ class GameViewModel : ViewModel() {
     }
 
     fun newGame(): Game {
+        _gameOver.update {
+            false
+        }
         val position = (0 until _game.value.matrix.array.size).random()
         val value = selectRandomDigit()
         _game.value.matrix.array.replaceAll {
@@ -127,13 +133,12 @@ class GameViewModel : ViewModel() {
     }
 
     fun undoMove(): Game {
-
         if (canUseUndo) {
             _game.update {
                 it.copy(
                     matrix = lastMoveTilePosotions.value.matrix,
-                    score = lastMoveTilePosotions.value.score, //_game.value.score.minus(previousMoveScore),
-                    move = lastMoveTilePosotions.value.move //_game.value.move.minus(1)
+                    score = lastMoveTilePosotions.value.score,
+                    move = lastMoveTilePosotions.value.move
                 )
             }
             Log.d("moves", "undoMove: ${lastMoveTilePosotions.value.matrix.array}")
@@ -142,7 +147,36 @@ class GameViewModel : ViewModel() {
         return _game.value
     }
 
-    private fun gameOver() {
-        Log.d("moves", "gameOver: GAME OVER!!!")
+    private fun canContinue(array: MutableList<Int?>) {
+        var isHorizontalSum = false
+        var isVerticalSum = false
+        val hasNulls = _game.value.matrix.array.contains(null)
+        if (!hasNulls) {
+            // проверка по горизонталм
+            for (line in 0 until array.size / ROWCOUNT) {
+                val startIndex = line * ROWCOUNT // начало линии
+                val endIndex = startIndex + ROWCOUNT - 1 // конец линии
+
+                for (digit1 in startIndex until endIndex) {
+                    val digit2 = digit1 + 1
+                    if (array[digit1] == array[digit2]) {
+                        isHorizontalSum = true
+                    }
+                }
+            }
+            // проверка по вертикали
+            for (digit1 in 0 until array.size - ROWCOUNT) {
+                val digit2 = digit1 + ROWCOUNT
+                if (array[digit1] == array[digit2]) {
+                    isVerticalSum = true
+                }
+            }
+        }
+        if (!isHorizontalSum && !isVerticalSum && !hasNulls) {
+            Log.d("moves", "canContinue: GAMEOVER!")
+            _gameOver.update {
+                true
+            }
+        }
     }
 }
