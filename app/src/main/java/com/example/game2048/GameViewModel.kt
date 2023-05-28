@@ -22,39 +22,46 @@ class GameViewModel : ViewModel() {
         moveScore += a // если за ход несколько плиток суммируется, то нужна их сумма.
     }
 
-    fun swipeToDirection(direction: Directions): Game {
-        val temporalArray = game.value.matrix.array.map { it }.toMutableList()
+    fun makeSwipe(direction: Directions): Game {
+        val temporalArray = _game.value.matrix.array.map { it }.toMutableList()
+        swipeToDirection(direction, temporalArray)
+        usualMove(temporalArray)
+        return _game.value
+
+    }
+
+    private fun swipeToDirection(
+        direction: Directions,
+        array: MutableList<Int?>
+    ): MutableList<Int?> {
         when (direction) {
             Directions.RIGHT -> {
-                Swipes(this).swipeToRight(temporalArray)
+                Swipes(this).swipeToRight(array)
                 Log.d("swipes", "Arena: RIGHT")
             }
 
             Directions.LEFT -> {
-                Swipes(this).swipeToLeft(temporalArray)
+                Swipes(this).swipeToLeft(array)
                 Log.d("swipes", "Arena: LEFT")
             }
 
             Directions.UP -> {
-                Swipes(this).swipeToUp(temporalArray)
+                Swipes(this).swipeToUp(array)
                 Log.d("swipes", "Arena: UP")
             }
 
             Directions.DOWN -> {
-                Swipes(this).swipeToDown(temporalArray)
+                Swipes(this).swipeToDown(array)
                 Log.d("swipes", "Arena: DOWN")
             }
         }
-        usualMove(temporalArray)
-        gameOver()
-        return _game.value
+        return array
     }
 
     private fun usualMove(array: MutableList<Int?>) {
-//        if (array.containsAll(lastMoveTilePosotions.value.matrix.array)){
-//            Log.d("moves", "swipeToDirection: SAME ARRAY")
-//            return
-//        }
+        if (isMovePossible(array)) {
+            return
+        }
         lastMoveTilePosotions.value = _game.value
         addNewDigit(array)
         _game.update { game ->
@@ -67,8 +74,17 @@ class GameViewModel : ViewModel() {
         canUseUndo = true
         previousMoveScore = moveScore
         moveScore = 0
-        Log.d("moves", "newScore =  ${_game.value.move}")
+        Log.d("moves", "move =  ${_game.value.move}")
         Log.d("moves", "_gameScore = ${_game.value.score}")
+    }
+
+    private fun isMovePossible(temporalArray: MutableList<Int?>): Boolean {
+        val array = _game.value.matrix.array
+        if (temporalArray == array) {
+            Log.d("moves", "isMovePossible: NO CHANGE")
+            return true
+        }
+        return false
     }
 
     private fun addNewDigit(array: MutableList<Int?>): MutableList<Int?>? {
@@ -111,6 +127,7 @@ class GameViewModel : ViewModel() {
     }
 
     fun undoMove(): Game {
+
         if (canUseUndo) {
             _game.update {
                 it.copy(
@@ -119,20 +136,13 @@ class GameViewModel : ViewModel() {
                     move = lastMoveTilePosotions.value.move //_game.value.move.minus(1)
                 )
             }
+            Log.d("moves", "undoMove: ${lastMoveTilePosotions.value.matrix.array}")
             canUseUndo = false
         }
         return _game.value
     }
 
     private fun gameOver() {
-        if (!_game.value.matrix.array.contains(null)) {
-            if (
-                swipeToDirection(Directions.RIGHT) == swipeToDirection(Directions.LEFT) &&
-                swipeToDirection(Directions.UP) == swipeToDirection(Directions.DOWN)
-            ) {
-                Log.d("moves", "GAME OVER")
-                println("GAME OVER")
-            }
-        }
+        Log.d("moves", "gameOver: GAME OVER!!!")
     }
 }

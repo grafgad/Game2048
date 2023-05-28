@@ -49,7 +49,7 @@ fun Arena(
                         }
                     },
                     onDragEnd = {
-                                viewModel.swipeToDirection(direction)
+                        viewModel.makeSwipe(direction)
                     },
                     onDragStart = {},
                     onDragCancel = {}

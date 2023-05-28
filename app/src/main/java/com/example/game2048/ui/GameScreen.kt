@@ -55,7 +55,6 @@ fun Statistics(
     movesCount: Int,
     scores: Int
 ) {
-
     Row(
         modifier = modifier
             .fillMaxWidth(),
@@ -79,7 +78,6 @@ fun Buttons(
     modifier: Modifier = Modifier,
     viewModel: GameViewModel,
 ) {
-
     Row(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceEvenly,
