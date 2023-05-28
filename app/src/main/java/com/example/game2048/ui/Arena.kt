@@ -31,6 +31,7 @@ fun Arena(
     viewModel: GameViewModel
 ) {
     var direction by remember { mutableStateOf(Directions.UP) }
+    val gameOver by remember { mutableStateOf(viewModel.gameOver) }
     Box(
         modifier = modifier
             .padding(16.dp)
@@ -49,13 +50,18 @@ fun Arena(
                         }
                     },
                     onDragEnd = {
-                                viewModel.swipeToDirection(direction)
+                        viewModel.makeSwipe(direction)
                     },
                     onDragStart = {},
                     onDragCancel = {}
                 )
             }
     ) {
+        GameOverScreen(
+            modifier = Modifier,
+            isGameOver = gameOver.collectAsState().value,
+            viewModel = viewModel
+        )
         val vmMatrix by viewModel.game.collectAsState()
         Column {
             repeat(ROWCOUNT) { row ->

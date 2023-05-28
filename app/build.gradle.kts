@@ -1,6 +1,3 @@
-import com.android.build.api.dsl.Packaging
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -52,11 +49,6 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = "1.4.6"
     }
-//    fun Packaging.() {
-//        resources {
-//            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-//        }
-//    }
     namespace = "com.example.game2048"
 }
 

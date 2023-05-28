@@ -2,16 +2,6 @@ package com.example.game2048
 
 class Swipes(private val viewModel: GameViewModel) {
 
-    private fun compareDigits(
-        matrix: MutableList<Int?>,
-        digit: Int,
-        digit2: Int
-    ) {
-        matrix[digit] = matrix[digit]!!.times(2) // умножаем значение вдвое
-        matrix[digit2] = null // обнуляем соседнюю ячейку
-        viewModel.setMoveScore(matrix[digit]!!)
-    }
-
     // собрать все элементы внизу поля
     fun swipeToDown(matrix: MutableList<Int?>): MutableList<Int?> {
         val tempArr = mutableListOf<Int?>()
@@ -21,23 +11,21 @@ class Swipes(private val viewModel: GameViewModel) {
 
             for (digit in endIndex downTo startIndex step ROWCOUNT) { //проверяем колонку снизу вверх
                 var summed = false
+                val blockTile = digit - ROWCOUNT
 
                 for (digit2 in digit - ROWCOUNT downTo startIndex step ROWCOUNT) {
-                    if (matrix[digit] != null && matrix[digit] == matrix[digit2]) {
+                    if (matrix[blockTile] != null && matrix[digit2] != matrix[blockTile]){
+                        break // прерываем если есть между плитками есть другая непустая
+                    }
+                    if (matrix[digit] == matrix[digit2] && matrix[digit] != null) {
                         if (summed) {
                             break // если суммирование уже произошло, то прерываем цикл
                         }
-                        compareDigits(matrix, digit, digit2)
+                        sumTiles(matrix, digit, digit2)
                         summed = true
                     }
                 }
-                // добавляем во временный массив числовые элементы
-                if (matrix[digit] != null) {
-                    tempArr.add(
-                        index = ROWCOUNT * startIndex,
-                        element = matrix[digit]
-                    )
-                }
+                addDigitsToTempArr(tempArr, matrix[digit], index = ROWCOUNT * startIndex)
             }
             // проверяем длину временного массива и добавляем в его ВЕРХ null,
             // если он короче длины исходного
@@ -66,20 +54,20 @@ class Swipes(private val viewModel: GameViewModel) {
 
             for (digit in startIndex..endIndex step ROWCOUNT) { //проверяем колонку сверху вниз
                 var summed = false
-
+                val blockTile = digit + ROWCOUNT
                 for (digit2 in digit + ROWCOUNT..endIndex step ROWCOUNT) {
-                    if (matrix[digit] != null && matrix[digit] == matrix[digit2]) {
+                    if (matrix[blockTile] != null && matrix[digit2] != matrix[blockTile]){
+                        break // прерываем если есть между плитками есть другая непустая
+                    }
+                    if (matrix[digit] == matrix[digit2] && matrix[digit] != null) {
                         if (summed) {
                             break // если суммирование уже произошло, то прерываем цикл
                         }
-                        compareDigits(matrix, digit, digit2)
+                        sumTiles(matrix, digit, digit2)
                         summed = true
                     }
                 }
-                // добавляем во временный массив числовые элементы
-                if (matrix[digit] != null) {
-                    tempArr.add(matrix[digit])
-                }
+                addDigitsToTempArr(tempArr, matrix[digit], index = tempArr.size)
             }
             // проверяем длину временного массива и добавляем в его НИЗ null,
             // если он короче длины исходного
@@ -107,24 +95,22 @@ class Swipes(private val viewModel: GameViewModel) {
 
             for (digit in endIndex downTo startIndex) { // проверяем справа налево
                 var summed = false
+                val blockTile = digit - 1
 
                 for (digit2 in digit - 1 downTo startIndex) {
                     // сравнение соседних элементов линии
+                    if (matrix[blockTile] != null && matrix[digit2] != matrix[blockTile]){
+                        break // прерываем если есть между плитками есть другая непустая
+                    }
                     if (matrix[digit] == matrix[digit2] && matrix[digit] != null) {
                         if (summed) {
                             break // если суммирование уже произошло, то прерываем цикл
                         }
-                        compareDigits(matrix, digit, digit2)
+                        sumTiles(matrix, digit, digit2)
                         summed = true
                     }
                 }
-                // добавляем во временный массив числовые элементы
-                if (matrix[digit] != null) {
-                    tempArr.add(
-                        index = startIndex,
-                        element = matrix[digit]
-                    )
-                }
+                addDigitsToTempArr(tempArr, matrix[digit], index = startIndex)
             }
             // проверяем длину временного массива и добавляем в его НАЧАЛО null,
             // если он короче длины исходного
@@ -153,20 +139,21 @@ class Swipes(private val viewModel: GameViewModel) {
 
             for (digit in startIndex..endIndex) { // проходим по элементам линии
                 var summed = false
+                val blockTile = digit+1
 
                 for (digit2 in digit + 1..endIndex) { // сравнение соседних элементов линии
+                    if (matrix[blockTile] != null && matrix[digit2] != matrix[blockTile]){
+                        break // прерываем если есть между плитками есть другая непустая
+                    }
                     if (matrix[digit] == matrix[digit2] && matrix[digit] != null) {
                         if (summed) {
                             break // если суммирование уже произошло, то прерываем цикл
                         }
-                        compareDigits(matrix, digit, digit2)
+                        sumTiles(matrix, digit, digit2)
                         summed = true
                     }
                 }
-                // добавляем во временный массив числовые элементы
-                if (matrix[digit] != null) {
-                    tempArr.add(matrix[digit])
-                }
+                addDigitsToTempArr(tempArr, matrix[digit], index = tempArr.size)
             }
             // проверяем длину временного массива и добавляем в его КОНЕЦ null,
             // если он короче длины исходного
@@ -179,5 +166,25 @@ class Swipes(private val viewModel: GameViewModel) {
             matrix[position] = tempArr[position]
         }
         return matrix
+    }
+
+    private fun sumTiles(
+        matrix: MutableList<Int?>,
+        digit: Int,
+        digit2: Int
+    ) {
+        matrix[digit] = matrix[digit]!!.times(2) // умножаем значение вдвое
+        matrix[digit2] = null // обнуляем соседнюю ячейку
+        viewModel.setMoveScore(matrix[digit]!!)
+    }
+
+    // добавляем во временный массив числовые элементы
+    private fun addDigitsToTempArr(array: MutableList<Int?>, digit: Int?, index: Int) {
+        if (digit != null) {
+            array.add(
+                index = index,
+                element = digit
+            )
+        }
     }
 }
