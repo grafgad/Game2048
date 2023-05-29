@@ -5,13 +5,13 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.game2048.ui.GameScreen
 import com.example.game2048.ui.theme.Game2048Theme
+import com.example.game2048.ui.theme.GameTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,7 +21,7 @@ class MainActivity : ComponentActivity() {
                 // A surface container using the "background" color from the theme
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
-                    drawerBackgroundColor = MaterialTheme.colors.background
+                    drawerBackgroundColor = GameTheme.color.background
                 ) {
                     GameScreen(
                         modifier = Modifier.padding(it)

@@ -14,6 +14,7 @@ object GameColors {
     val Background = Color(0xC8BBB9B9)
     val Yellow = Color(0xFFF8BC25)
     val EmptyTileColor = Color(0xFF616161)
+    val Black = Color(0xFF000000)
 
 
     val tileColors = mapOf<Int, Color>(

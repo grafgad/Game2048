@@ -1,60 +1,86 @@
 package com.example.game2048.ui.theme
 
-import androidx.compose.material.Typography
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
-val GameTypography = Typography(
-    h4 = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.W600,
-        fontSize = 30.sp
+@Immutable
+data class GameTypography(
+    val h1: TextStyle = TextStyle(
+        fontWeight = FontWeight.Medium,
+        fontSize = 42.sp,
+        color = GameColors.Black
     ),
-    h5 = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.W600,
-        fontSize = 24.sp
+    val h2: TextStyle = TextStyle(
+        fontWeight = FontWeight.Medium,
+        fontSize = 32.sp,
+        color = GameColors.Black
     ),
-    h6 = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.W600,
-        fontSize = 20.sp
-    ),
-    subtitle1 = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.W600,
-        fontSize = 16.sp
-    ),
-    subtitle2 = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.W500,
-        fontSize = 14.sp
-    ),
-    body1 = TextStyle(
-        fontFamily = FontFamily.Default,
+    val h3: TextStyle = TextStyle(
         fontWeight = FontWeight.Normal,
-        fontSize = 16.sp
+        fontSize = 22.sp,
+        color = GameColors.Black
     ),
-    body2 = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontSize = 14.sp
+    val h4: TextStyle = TextStyle(
+        fontWeight = FontWeight.Medium,
+        fontSize = 20.sp,
+        color = GameColors.Black
     ),
-    button = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.W500,
-        fontSize = 14.sp
+    val h5: TextStyle = TextStyle(
+        fontWeight = FontWeight.Medium,
+        fontSize = 18.sp,
+        color = GameColors.Black
     ),
-    caption = TextStyle(
-        fontFamily = FontFamily.Default,
+    val h6: TextStyle = TextStyle(
         fontWeight = FontWeight.Normal,
-        fontSize = 12.sp
+        fontSize = 18.sp,
+        color = GameColors.Black
     ),
-    overline = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.W500,
-        fontSize = 12.sp
+    val body1: TextStyle = TextStyle(
+        fontWeight = FontWeight.Normal,
+        fontSize = 16.sp,
+        color = GameColors.Black
+    ),
+    val body1_medium: TextStyle = TextStyle(
+        fontWeight = FontWeight.Medium,
+        fontSize = 16.sp,
+        color = GameColors.Black
+    ),
+    val body2: TextStyle = TextStyle(
+        fontWeight = FontWeight.Normal,
+        fontSize = 14.sp,
+        color = GameColors.Black
+    ),
+    val body2_medium: TextStyle = TextStyle(
+        fontWeight = FontWeight.Medium,
+        fontSize = 14.sp,
+        color = GameColors.Black
+    ),
+    val subtitle1: TextStyle = TextStyle(
+        fontWeight = FontWeight.Medium,
+        fontSize = 13.sp,
+        color = GameColors.Black
+    ),
+    val subtitle2: TextStyle = TextStyle(
+        fontWeight = FontWeight.Medium,
+        fontSize = 12.sp,
+        color = GameColors.Black
+    ),
+    val subtitle3: TextStyle = TextStyle(
+        fontWeight = FontWeight.Normal,
+        fontSize = 12.sp,
+        color = GameColors.Black
+    ),
+    val subtitle4: TextStyle = TextStyle(
+        fontWeight = FontWeight.Medium,
+        fontSize = 11.sp,
+        color = GameColors.Black
+    ),
+    val subtitle5: TextStyle = TextStyle(
+        fontWeight = FontWeight.Medium,
+        fontSize = 10.sp,
+        color = GameColors.Black
     )
     /* Other default text styles to override
     button = TextStyle(
