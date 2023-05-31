@@ -1,4 +1,7 @@
-package com.example.game2048
+package com.example.game2048.domain
+
+import com.example.game2048.data.ROWCOUNT
+import com.example.game2048.presentation.GameViewModel
 
 class Swipes(private val viewModel: GameViewModel) {
 

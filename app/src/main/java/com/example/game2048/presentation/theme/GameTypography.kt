@@ -1,4 +1,4 @@
-package com.example.game2048.ui.theme
+package com.example.game2048.presentation.theme
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.text.TextStyle

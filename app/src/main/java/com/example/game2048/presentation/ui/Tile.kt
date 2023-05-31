@@ -1,4 +1,4 @@
-package com.example.game2048.ui
+package com.example.game2048.presentation.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -17,26 +17,26 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.game2048.ui.theme.GameColors
-import com.example.game2048.ui.theme.tileColor
+import com.example.game2048.presentation.theme.GameColors
+import com.example.game2048.presentation.theme.tileColor
 
 private const val TEXT_SCALE_REDUCTION_INTERVAL = 0.9f
 
 @Composable
 fun Tile(
     modifier: Modifier = Modifier,
-    value: Int?
+    digit: Int?
 ) {
-    val backgroundColor = GameColors.tileColor(value)
+    val tileBackgroundColor = GameColors.tileColor(digit)
 
     Box(
         modifier = modifier
             .fillMaxSize()
             .clip(RoundedCornerShape(5.dp))
-            .background(color = backgroundColor),
+            .background(color = tileBackgroundColor),
         contentAlignment = Alignment.Center
     ) {
-        ResizedText(text = value?.toString() ?: "")
+        ResizedText(text = digit?.toString() ?: "")
     }
 }
 
@@ -45,7 +45,7 @@ fun ResizedText(
     text: String,
     style: TextStyle = TextStyle(fontSize = 42.sp)
 ) {
-    var resizedTextStyle by remember (text) { mutableStateOf(style) }
+    var resizedTextStyle by remember(text) { mutableStateOf(style) }
 
     Text(
         text = text,

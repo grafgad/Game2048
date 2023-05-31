@@ -9,9 +9,9 @@ import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.game2048.ui.GameScreen
-import com.example.game2048.ui.theme.Game2048Theme
-import com.example.game2048.ui.theme.GameTheme
+import com.example.game2048.presentation.ui.GameScreen
+import com.example.game2048.presentation.theme.Game2048Theme
+import com.example.game2048.presentation.theme.GameTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

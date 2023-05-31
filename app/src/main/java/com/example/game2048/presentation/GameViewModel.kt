@@ -1,7 +1,11 @@
-package com.example.game2048
+package com.example.game2048.presentation
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import com.example.game2048.data.Directions
+import com.example.game2048.data.Game
+import com.example.game2048.domain.GameOverCheck
+import com.example.game2048.domain.Swipes
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,13 +24,13 @@ class GameViewModel : ViewModel() {
 
     private var _gameOver = MutableStateFlow(false)
     val gameOver: StateFlow<Boolean> = _gameOver
-
+    
     fun setMoveScore(a: Int) {
         moveScore += a // если за ход несколько плиток суммируется, то нужна их сумма.
     }
 
     fun makeSwipe(direction: Directions): Game {
-        val temporalArray = _game.value.matrix.array.map { it }.toMutableList()
+        val temporalArray = _game.value.matrix.array.toMutableList()
         swipeToDirection(direction, temporalArray)
         usualMove(temporalArray)
         return _game.value
@@ -114,7 +118,7 @@ class GameViewModel : ViewModel() {
         _game.value.matrix.array.replaceAll {
             null
         }
-        val temporalArray = _game.value.matrix.array.map { it }.toMutableList()
+        val temporalArray = _game.value.matrix.array.toMutableList()
         temporalArray[position] = value
         _game.update { game ->
             game.copy(
@@ -141,38 +145,17 @@ class GameViewModel : ViewModel() {
                     move = lastMoveTilePosotions.value.move
                 )
             }
-            Log.d("moves", "undoMove: ${lastMoveTilePosotions.value.matrix.array}")
+            Log.d("moves", "undoMove: ${lastMoveTilePosotions.value.matrix.asMatrix()}")
             canUseUndo = false
+        }
+        _gameOver.update {
+            false
         }
         return _game.value
     }
 
     private fun canContinue(array: MutableList<Int?>) {
-        var isHorizontalSum = false
-        var isVerticalSum = false
-        val hasNulls = _game.value.matrix.array.contains(null)
-        if (!hasNulls) {
-            // проверка по горизонталм
-            for (line in 0 until array.size / ROWCOUNT) {
-                val startIndex = line * ROWCOUNT // начало линии
-                val endIndex = startIndex + ROWCOUNT - 1 // конец линии
-
-                for (digit1 in startIndex until endIndex) {
-                    val digit2 = digit1 + 1
-                    if (array[digit1] == array[digit2]) {
-                        isHorizontalSum = true
-                    }
-                }
-            }
-            // проверка по вертикали
-            for (digit1 in 0 until array.size - ROWCOUNT) {
-                val digit2 = digit1 + ROWCOUNT
-                if (array[digit1] == array[digit2]) {
-                    isVerticalSum = true
-                }
-            }
-        }
-        if (!isHorizontalSum && !isVerticalSum && !hasNulls) {
+        if (!GameOverCheck().canContinue(array)) {
             Log.d("moves", "canContinue: GAMEOVER!")
             _gameOver.update {
                 true

@@ -1,4 +1,4 @@
-package com.example.game2048
+package com.example.game2048.data
 
 data class Game(
     var matrix: Matrix = Matrix(),

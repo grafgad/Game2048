@@ -1,15 +1,15 @@
-package com.example.game2048
+package com.example.game2048.data
 
 const val ROWCOUNT = 4
 
 data class Matrix(
-    var array: MutableList<Int?> = arrayOfNulls<Int?>(16).toMutableList()
-//    var array: MutableList<Int?> = arrayOf(
-//        2,4,2,8,
-//        2,2,4,4,
-//        8,8,32,32,
-//        2,null, null, 2
-//    ).toMutableList()
+//    var array: MutableList<Int?> = arrayOfNulls<Int?>(16).toMutableList()
+    var array: MutableList<Int?> = arrayOf(
+        2,null, 2, 32,
+        128,64,32,16,
+        256,512,1024, 2048,
+        32768,16384,8192,4096,
+    ).toMutableList()
 ) {
     fun matrixCopy(newArray: MutableList<Int?>): Matrix = Matrix().copy(
         array = newArray.toMutableList()

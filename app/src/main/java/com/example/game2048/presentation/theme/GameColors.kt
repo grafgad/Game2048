@@ -1,4 +1,4 @@
-package com.example.game2048.ui.theme
+package com.example.game2048.presentation.theme
 
 import androidx.compose.ui.graphics.Color
 
@@ -15,25 +15,26 @@ object GameColors {
     val Yellow = Color(0xFFF8BC25)
     val EmptyTileColor = Color(0xFF616161)
     val Black = Color(0xFF000000)
+    val Transparent = Color(0x00000000)
 
 
     val tileColors = mapOf<Int, Color>(
-        2 to Color(0xCDD3D3D3),
+        2 to Color(0xEBA2A2A2),
         4 to Color(0xEBB6B5B5),
-        8 to Color(0xEBA2A2A2),
+        8 to Color(0xCDD3D3D3),
         16 to Color(0xFFD8FFC9),
         32 to Color(0xFFB3FC97),
         64 to Color(0xFF8FFD65),
-        128 to Color(0xFFB4FD8C),
-        256 to Color(0xFF94FF5A),
-        512 to Color(0xFF7FFD3B),
-        1024 to Color(0xFF77FFB4),
-        2048 to Color(0xFF38E9FA),
-        4096 to Color(0xFF255D6B),
-        8192 to Color(0xFF3BA5EB),
-        16384 to Color(0xFF8536F5),
-        32768 to Color(0xFF7C35EE),
-        65536 to Color(0xFF8F25F8),
+        128 to Color(0xFF88E952),
+        256 to Color(0xFF80EB44),
+        512 to Color(0xFF27A729),
+        1024 to Color(0xFF3C61E9),
+        2048 to Color(0xFF371ADA),
+        4096 to Color(0xFF7B5999),
+        8192 to Color(0xFF843ED5),
+        16384 to Color(0xFFF58F36),
+        32768 to Color(0xFFEE8B35),
+        65536 to Color(0xFFF8A425),
     )
 }
 

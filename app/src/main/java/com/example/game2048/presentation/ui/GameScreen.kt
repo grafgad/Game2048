@@ -1,6 +1,5 @@
-package com.example.game2048.ui
+package com.example.game2048.presentation.ui
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,8 +22,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.game2048.GameViewModel
 import com.example.game2048.R
+import com.example.game2048.presentation.GameViewModel
 
 @Composable
 fun GameScreen(
@@ -45,7 +44,10 @@ fun GameScreen(
             modifier = Modifier,
             viewModel = viewModel
         )
-        Arena(viewModel = viewModel)
+        Arena(
+            modifier = Modifier,
+            viewModel = viewModel
+        )
     }
 }
 
@@ -86,7 +88,6 @@ fun Buttons(
         Button(
             onClick = {
                 viewModel.undoMove()
-                Log.d("DDDDDD", "undo ${viewModel.game.value.matrix.asMatrix()}")
             },
         ) {
             Icon(
