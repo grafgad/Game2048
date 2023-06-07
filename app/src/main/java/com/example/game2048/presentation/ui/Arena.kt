@@ -70,7 +70,7 @@ fun Arena(
             repeat(ROWCOUNT) { row ->
                 HorizontalFields(
                     modifier = Modifier,
-                    line = game.matrix.asMatrix()[row]
+                    line = game.matrix.squareMatrix()[row]
                 )
             }
         }

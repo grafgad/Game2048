@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.example.game2048.data.Directions
 import com.example.game2048.data.Game
+import com.example.game2048.data.TileData
 import com.example.game2048.domain.GameOverCheck
 import com.example.game2048.domain.Swipes
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,7 +25,14 @@ class GameViewModel : ViewModel() {
 
     private var _gameOver = MutableStateFlow(false)
     val gameOver: StateFlow<Boolean> = _gameOver
-    
+
+    private var tileData = MutableStateFlow(TileData())
+
+    fun setTileData(position: Int, shift: Int): MutableMap<Int, Int> {
+        tileData.value.tileData[position] = shift
+        return tileData.value.tileData
+    }
+
     fun setMoveScore(a: Int) {
         moveScore += a // если за ход несколько плиток суммируется, то нужна их сумма.
     }
@@ -48,6 +56,7 @@ class GameViewModel : ViewModel() {
 
             Directions.LEFT -> {
                 Swipes(this).swipeToLeft(array)
+                Log.d("swipes", "TileData: ${tileData.value}")
                 Log.d("swipes", "Arena: LEFT")
             }
 
@@ -145,7 +154,7 @@ class GameViewModel : ViewModel() {
                     move = lastMoveTilePosotions.value.move
                 )
             }
-            Log.d("moves", "undoMove: ${lastMoveTilePosotions.value.matrix.asMatrix()}")
+            Log.d("moves", "undoMove: ${lastMoveTilePosotions.value.matrix.squareMatrix()}")
             canUseUndo = false
         }
         _gameOver.update {
