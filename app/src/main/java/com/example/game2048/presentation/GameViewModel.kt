@@ -51,22 +51,25 @@ class GameViewModel : ViewModel() {
         when (direction) {
             Directions.RIGHT -> {
                 Swipes(this).swipeToRight(array)
+                Log.d("swipes", "TileData: ${tileData.value.tileData.toSortedMap()}")
                 Log.d("swipes", "Arena: RIGHT")
             }
 
             Directions.LEFT -> {
                 Swipes(this).swipeToLeft(array)
-                Log.d("swipes", "TileData: ${tileData.value}")
+                Log.d("swipes", "TileData: ${tileData.value.tileData.toSortedMap()}")
                 Log.d("swipes", "Arena: LEFT")
             }
 
             Directions.UP -> {
                 Swipes(this).swipeToUp(array)
+                Log.d("swipes", "TileData: ${tileData.value.tileData.toSortedMap()}")
                 Log.d("swipes", "Arena: UP")
             }
 
             Directions.DOWN -> {
                 Swipes(this).swipeToDown(array)
+                Log.d("swipes", "TileData: ${tileData.value.tileData.toSortedMap()}")
                 Log.d("swipes", "Arena: DOWN")
             }
         }

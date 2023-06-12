@@ -9,33 +9,45 @@ class Swipes(private val viewModel: GameViewModel) {
     fun swipeToDown(matrix: MutableList<Int?>): MutableList<Int?> {
         val tempArr = mutableListOf<Int?>()
 
-        for (startIndex in 0 until matrix.size / ROWCOUNT) { // разделили на колонки
-            val endIndex = matrix.size - ROWCOUNT + startIndex // конец колонки
+        for (column in 0 until matrix.size / ROWCOUNT) { // разделили на колонки
+            val endIndex = matrix.size - ROWCOUNT + column // конец колонки
+            var fullTileQuantity = 0 // кол-во плиток с числом в ряду
+            var fullTileCorrection = 0 // кол-во плиток с числом в ряду
+            var sumFactor = false // коррекция пустых плиток при суммировании плиток
 
-            for (position in endIndex downTo startIndex step ROWCOUNT) { //проверяем колонку снизу вверх
+            for (position in endIndex downTo column step ROWCOUNT) { //проверяем колонку снизу вверх
                 var summed = false
                 val blockTile = position - ROWCOUNT
+                // кол-во сдвигов начиная от начала линии и отнимая кол-во занятых плиток
+                val shift =
+                    ((position - endIndex) / ROWCOUNT) + fullTileQuantity - fullTileCorrection
 
-                for (comparePosition in position - ROWCOUNT downTo startIndex step ROWCOUNT) {
-
+                for (comparePosition in position - ROWCOUNT downTo column step ROWCOUNT) {
                     // прерываем если есть между плитками есть другая непустая
                     if (blockSumThroughTile(matrix, comparePosition, blockTile)) break
-
                     if (matrix[position] == matrix[comparePosition] && matrix[position] != null) {
                         if (summed) {
                             break // если суммирование уже произошло, то прерываем цикл
                         }
                         sumTiles(matrix, position, comparePosition)
                         summed = true
+                        sumFactor = true
                     }
                 }
-                addDigitsToTempArr(tempArr, matrix[position], index = ROWCOUNT * startIndex)
+                addDigitsToTempArr(tempArr, matrix[position], index = ROWCOUNT * column)
+                fullTileQuantity =
+                    shiftRegistration(matrix, position, shift, fullTileCorrection, fullTileQuantity)
+                // блок для коррекции обнулившейся плитки, после суммироавния
+                if (sumFactor) {
+                    fullTileCorrection = 1
+                    sumFactor = false
+                } else fullTileCorrection = 0
             }
             // проверяем длину временного массива и добавляем в его ВЕРХ null,
             // если он короче длины исходного
-            while (tempArr.size < (ROWCOUNT * (startIndex + 1))) {
+            while (tempArr.size < (ROWCOUNT * (column + 1))) {
                 tempArr.add(
-                    index = ROWCOUNT * startIndex,
+                    index = ROWCOUNT * column,
                     element = null
                 )
             }
@@ -53,27 +65,40 @@ class Swipes(private val viewModel: GameViewModel) {
     fun swipeToUp(matrix: MutableList<Int?>): MutableList<Int?> {
         val tempArr = mutableListOf<Int?>()
 
-        for (startIndex in 0 until matrix.size / ROWCOUNT) { // разделили на колонки
-            val endIndex = matrix.size - ROWCOUNT + startIndex // конец колонки
+        for (column in 0 until matrix.size / ROWCOUNT) { // разделили на колонки
+            val endIndex = matrix.size - ROWCOUNT + column // конец колонки
+            var fullTileQuantity = 0 // кол-во плиток с числом в ряду
+            var fullTileCorrection = 0 // кол-во плиток с числом в ряду
+            var sumFactor = false // коррекция пустых плиток при суммировании плиток
 
-            for (position in startIndex..endIndex step ROWCOUNT) { //проверяем колонку сверху вниз
+            for (position in column..endIndex step ROWCOUNT) { //проверяем колонку сверху вниз
                 var summed = false
                 val blockTile = position + ROWCOUNT
+                // кол-во сдвигов начиная от начала линии и отнимая кол-во занятых плиток
+                val shift = ((position - column) / ROWCOUNT) - fullTileQuantity + fullTileCorrection
+
                 for (comparePosition in position + ROWCOUNT..endIndex step ROWCOUNT) {
                     // прерываем если есть между плитками есть другая непустая
                     if (blockSumThroughTile(matrix, comparePosition, blockTile)) break
-
                     if (matrix[position] == matrix[comparePosition] && matrix[position] != null) {
                         if (summed) break // если суммирование уже произошло, то прерываем цикл
                         sumTiles(matrix, position, comparePosition)
                         summed = true
+                        sumFactor = true
                     }
                 }
                 addDigitsToTempArr(tempArr, matrix[position], index = tempArr.size)
+                fullTileQuantity =
+                    shiftRegistration(matrix, position, shift, fullTileCorrection, fullTileQuantity)
+                // блок для коррекции обнулившейся плитки, после суммироавния
+                if (sumFactor) {
+                    fullTileCorrection = 1
+                    sumFactor = false
+                } else fullTileCorrection = 0
             }
             // проверяем длину временного массива и добавляем в его НИЗ null,
             // если он короче длины исходного
-            while (tempArr.size < (ROWCOUNT * (startIndex + 1))) {
+            while (tempArr.size < (ROWCOUNT * (column + 1))) {
                 tempArr.add(null)
             }
         }
@@ -94,10 +119,15 @@ class Swipes(private val viewModel: GameViewModel) {
         for (line in 0 until matrix.size / ROWCOUNT) { // разделили на линии
             val startIndex = line * ROWCOUNT // начало линии
             val endIndex = startIndex + ROWCOUNT - 1 // конец линии
+            var fullTileQuantity = 0 // кол-во плиток с числом в ряду
+            var fullTileCorrection = 0 // кол-во плиток с числом в ряду
+            var sumFactor = false // коррекция пустых плиток при суммировании плиток
 
             for (position in endIndex downTo startIndex) { // проверяем справа налево
                 var summed = false
                 val blockTile = position - 1
+                // кол-во сдвигов начиная от начала линии и отнимая кол-во занятых плиток
+                val shift = endIndex - position - fullTileQuantity + fullTileCorrection
 
                 for (comparePosition in position - 1 downTo startIndex) {
                     // сравнение соседних элементов линии
@@ -108,9 +138,17 @@ class Swipes(private val viewModel: GameViewModel) {
                         if (summed) break // если суммирование уже произошло, то прерываем цикл
                         sumTiles(matrix, position, comparePosition)
                         summed = true
+                        sumFactor = true
                     }
                 }
                 addDigitsToTempArr(tempArr, matrix[position], index = startIndex)
+                fullTileQuantity =
+                    shiftRegistration(matrix, position, shift, fullTileCorrection, fullTileQuantity)
+                // блок для коррекции обнулившейся плитки, после суммироавния
+                if (sumFactor) {
+                    fullTileCorrection = 1
+                    sumFactor = false
+                } else fullTileCorrection = 0
             }
             // проверяем длину временного массива и добавляем в его НАЧАЛО null,
             // если он короче длины исходного
@@ -137,32 +175,34 @@ class Swipes(private val viewModel: GameViewModel) {
             val startIndex = line * ROWCOUNT // начало линии
             val endIndex = startIndex + ROWCOUNT - 1 // конец линии
             var fullTileQuantity = 0 // кол-во плиток с числом в ряду
-            var emptrTileQuantity = 0
+            var fullTileCorrection = 0 // кол-во плиток с числом в ряду
+            var sumFactor = false // коррекция пустых плиток при суммировании плиток
 
             for (position in startIndex..endIndex) { // проходим по элементам линии
                 var summed = false
                 val blockTile = position + 1
                 // кол-во сдвигов начиная от начала линии и отнимая кол-во занятых плиток
+                val shift = startIndex - position + fullTileQuantity - fullTileCorrection
 
-                val shift = (position - startIndex) - fullTileQuantity
-                viewModel.setTileData(position, shift)
-
-                for (comparePosition in position + 1..endIndex) { // сравнение соседних элементов линии
+                // сравнение соседних элементов линии
+                for (comparePosition in position + 1..endIndex) {
                     // прерываем если есть между плитками есть другая непустая
                     if (blockSumThroughTile(matrix, comparePosition, blockTile)) break
                     if (matrix[position] == matrix[comparePosition] && matrix[position] != null) {
                         if (summed) break // если суммирование уже произошло, то прерываем цикл
                         sumTiles(matrix, position, comparePosition)
                         summed = true
+                        sumFactor = true
                     }
                 }
                 addDigitsToTempArr(tempArr, matrix[position], index = tempArr.size)
-
-                if (summed) fullTileQuantity--
-                if (matrix[position] != null) {
-                    fullTileQuantity++
-                }
-
+                fullTileQuantity =
+                    shiftRegistration(matrix, position, shift, fullTileCorrection, fullTileQuantity)
+                // блок для коррекции обнулившейся плитки, после суммироавния
+                if (sumFactor) {
+                    fullTileCorrection = 1
+                    sumFactor = false
+                } else fullTileCorrection = 0
             }
             // проверяем длину временного массива и добавляем в его КОНЕЦ null,
             // если он короче длины исходного
@@ -175,23 +215,18 @@ class Swipes(private val viewModel: GameViewModel) {
         return matrix
     }
 
-    private fun tileShiftReg(
+    private fun shiftRegistration(
         array: MutableList<Int?>,
         position: Int,
         shift: Int,
-        fullTile: Int
+        fullTileCorrection: Int,
+        fullTileQuantity: Int
     ): Int {
-        var fullTileQuantity = fullTile
-        if (array.contains(null) || array.size != array.toSet().size) {
-            viewModel.setTileData(
-                position,
-                shift
-            )
-            if (array[position] != null) {
-                fullTileQuantity++
-            }
-        }
-        return fullTileQuantity
+        var fullTileQuantityInternal = fullTileQuantity
+        val shiftValue = if (fullTileCorrection == 0 && array[position] == null) 0 else shift
+        if (array[position] != null) fullTileQuantityInternal++
+        viewModel.setTileData(position, shiftValue)
+        return fullTileQuantityInternal
     }
 
     private fun blockSumThroughTile(
