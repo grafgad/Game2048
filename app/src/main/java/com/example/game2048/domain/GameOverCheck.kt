@@ -13,17 +13,17 @@ class GameOverCheck {
                 val startIndex = line * ROWCOUNT // начало линии
                 val endIndex = startIndex + ROWCOUNT - 1 // конец линии
 
-                for (digit1 in startIndex until endIndex) {
-                    val digit2 = digit1 + 1
-                    if (array[digit1] == array[digit2]) {
+                for (position in startIndex until endIndex) {
+                    val digit = position + 1
+                    if (array[position] == array[digit]) {
                         isHorizontalSum = true
                     }
                 }
             }
             // проверка по вертикали
-            for (digit1 in 0 until array.size - ROWCOUNT) {
-                val digit2 = digit1 + ROWCOUNT
-                if (array[digit1] == array[digit2]) {
+            for (position in 0 until array.size - ROWCOUNT) {
+                val digit = position + ROWCOUNT
+                if (array[position] == array[digit]) {
                     isVerticalSum = true
                 }
             }
