@@ -54,8 +54,10 @@ android {
 
 dependencies {
 
+    implementation("com.google.code.gson:gson:2.10.1")
+
     implementation("androidx.core:core-ktx:1.10.1")
-    implementation(platform ("androidx.compose:compose-bom:2023.05.01"))
+    implementation(platform ("androidx.compose:compose-bom:2023.06.00"))
 
     implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
