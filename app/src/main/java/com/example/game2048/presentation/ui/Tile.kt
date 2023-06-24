@@ -1,6 +1,7 @@
 package com.example.game2048.presentation.ui
 
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,51 +22,76 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.game2048.TEXT_SCALE_REDUCTION_INTERVAL
+import com.example.game2048.TILEPADDING
+import com.example.game2048.data.Directions
+import com.example.game2048.data.TileData
 import com.example.game2048.presentation.theme.GameColors
 import com.example.game2048.presentation.theme.tileColor
 import com.example.game2048.toDp
-import kotlinx.coroutines.delay
 
-private const val TEXT_SCALE_REDUCTION_INTERVAL = 0.9f
 
 /*
 1 - Определеить для каждой ячейки количество сдвигов для конечного состояния и записать это значение в данные о каждой клетке
 2 - На стороне Compose функции Tile проиграть анимацию через offset умножив (количество свдигов) на (ширину клекти)
 3 - Получить колбэк об окончании анимации. После окончания анимации нужно заменить сатрые значения клеток на новые значения
  */
+
+enum class AnimationState {
+    START,
+    END
+}
+
 @Composable
 fun Tile(
     modifier: Modifier = Modifier,
-    digit: Int?
+    tileData: TileData,
+    direction: Directions
 ) {
-    val tileBackgroundColor = GameColors.tileColor(digit)
-    var boxSize by remember {
-        mutableStateOf(0)
-    }
+    val tileBackgroundColor = GameColors.tileColor(tileData.digit)
+    var boxSize by remember { mutableStateOf(0) }
+    val shift = tileData.shift.times(boxSize.plus((TILEPADDING * 2)))
     val boxSizeDp = boxSize.toDp()
-    var someOffset by remember {
-        mutableStateOf(0.dp)
-    }
-    val offsetState by animateDpAsState(targetValue = someOffset)
-    LaunchedEffect(boxSizeDp) {
-        delay(2000)
-//        if (digit ==2) someOffset = boxSizeDp
+    var moveOffset by remember { mutableStateOf(shift.dp) }
+    val horizontalOffset by animateDpAsState(
+        targetValue = when (direction) {
+            Directions.RIGHT -> moveOffset
+            Directions.LEFT -> moveOffset
+            else -> 0.dp
+        },
+        animationSpec = tween(durationMillis = 500)
+    )
+    val verticalOffset by animateDpAsState(
+        targetValue = when (direction) {
+            Directions.UP -> moveOffset
+            Directions.DOWN -> moveOffset
+            else -> 0.dp
+        },
+        animationSpec = tween(durationMillis = 500)
+    )
+    LaunchedEffect(shift) {
+        moveOffset = shift.dp
     }
     Box(
         modifier = modifier
             .fillMaxSize()
-//            .onSizeChanged {
-//                boxSize = it.height
-//            }
-//            .offset(
-//                x = 10.dp,
-//                y = offsetState
-//            )
+            .onSizeChanged {
+                boxSize = it.height
+            }
+            .offset( // vertical
+                x = 0.dp,
+                y = verticalOffset
+            )
+            .offset( // horizontal
+                x = horizontalOffset,
+                y = 0.dp
+            )
+
             .clip(RoundedCornerShape(5.dp))
             .background(color = tileBackgroundColor),
         contentAlignment = Alignment.Center
     ) {
-        ResizedText(text = digit?.toString() ?: "")
+        ResizedText(text = tileData.digit?.toString() ?: "")
     }
 }
 

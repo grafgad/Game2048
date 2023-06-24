@@ -1,10 +1,11 @@
 package com.example.game2048.presentation
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.example.game2048.data.Directions
 import com.example.game2048.data.Game
+import com.example.game2048.data.MyGame
 import com.example.game2048.data.TileData
+import com.example.game2048.data.TileShift
 import com.example.game2048.domain.GameOverCheck
 import com.example.game2048.domain.Swipes
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,25 +15,27 @@ import kotlinx.coroutines.flow.update
 
 class GameViewModel : ViewModel() {
 
-    private var _game = MutableStateFlow(Game())
+    private var _game = MutableStateFlow(MyGame.myUniqueGame)
     val game: StateFlow<Game> = _game.asStateFlow()
 
     private var _gameOver = MutableStateFlow(false)
     val gameOver: StateFlow<Boolean> = _gameOver
 
-    private val lastMoveTilePosotions = MutableStateFlow(Game()) // предыдущий ход для возврата
-    private var tileData = MutableStateFlow(TileData())
-    private var canUseUndo: Boolean = true
+    private var _tileShift = MutableStateFlow(TileShift)
+    val tileShift: StateFlow<TileShift> = _tileShift
+
+    private val lastMove = MutableStateFlow(Game()) // предыдущий ход для возврата
+    private var undoAvailable: Boolean = true
     private var moveScore = 0 // число очков за ход
     private var previousMoveScore = 0 //число очков для отмены хода
 
     fun newGame(): Game {
         _gameOver.update { false }
         val position = (0 until _game.value.matrix.array.size).random()
-        val value = selectRandomDigit()
-        _game.value.matrix.array.replaceAll { null }
+        val digit = selectRandomDigit()
+        _game.value.matrix.array.replaceAll { TileData(null, 0) }
         val temporalArray = _game.value.matrix.array.toMutableList()
-        temporalArray[position] = value
+        temporalArray[position] = digit
         _game.update { game ->
             game.copy(
                 matrix = _game.value.matrix.matrixCopy(temporalArray),
@@ -45,27 +48,27 @@ class GameViewModel : ViewModel() {
     }
 
     fun undoMove(): Game {
-        if (canUseUndo) {
+        if (undoAvailable) {
             _game.update {
                 it.copy(
-                    matrix = lastMoveTilePosotions.value.matrix,
-                    score = lastMoveTilePosotions.value.score,
-                    move = lastMoveTilePosotions.value.move
+                    matrix = lastMove.value.matrix,
+                    score = lastMove.value.score,
+                    move = lastMove.value.move
                 )
             }
-            canUseUndo = false
+            undoAvailable = false
         }
         _gameOver.update { false }
         return _game.value
     }
 
-    fun setMoveScore(a: Int) {
-        moveScore += a // если за ход несколько плиток суммируется, то нужна их сумма.
+    fun setMoveScore(score: Int) {
+        moveScore += score // если за ход несколько плиток суммируется, то нужна их сумма.
     }
 
-    fun setTileData(position: Int, shift: Int): MutableMap<Int, Int> {
-        tileData.value.tileData[position] = shift
-        return tileData.value.tileData
+    fun setTileShift(position: Int, digit: Int?, shift: Int): MutableMap<Int, TileData> {
+        _tileShift.value.tileShift[position] = TileData(digit, shift)
+        return _tileShift.value.tileShift
     }
 
     fun makeSwipe(direction: Directions): Game {
@@ -77,20 +80,21 @@ class GameViewModel : ViewModel() {
 
     private fun swipeToDirection(
         direction: Directions,
-        array: MutableList<Int?>
-    ): MutableList<Int?> {
+        array: MutableList<TileData>
+    ): MutableList<TileData> {
         when (direction) {
             Directions.RIGHT -> Swipes(this).swipeToRight(array)
             Directions.LEFT -> Swipes(this).swipeToLeft(array)
             Directions.UP -> Swipes(this).swipeToUp(array)
             Directions.DOWN -> Swipes(this).swipeToDown(array)
+            Directions.NONE -> {}
         }
         return array
     }
 
-    private fun usualMove(array: MutableList<Int?>) {
+    private fun usualMove(array: MutableList<TileData>) {
         if (noTilesChange(array)) return
-        lastMoveTilePosotions.value = _game.value
+        lastMove.value = _game.value
         addNewDigit(array)
         _game.update { game ->
             game.copy(
@@ -99,38 +103,34 @@ class GameViewModel : ViewModel() {
                 move = _game.value.move.plus(1),
             )
         }
-        canUseUndo = true
+        undoAvailable = true
         previousMoveScore = moveScore
         moveScore = 0
         canContinue(_game.value.matrix.array)
     }
 
-    private fun noTilesChange(temporalArray: MutableList<Int?>): Boolean {
-        if (temporalArray == _game.value.matrix.array) {
-            Log.d("moves", "noTilesChange: NO CHANGE")
-            return true
-        }
-        return false
+    private fun noTilesChange(temporalArray: MutableList<TileData>): Boolean {
+        return temporalArray == _game.value.matrix.array
     }
 
-    private fun addNewDigit(array: MutableList<Int?>): MutableList<Int?>? {
+    private fun addNewDigit(array: MutableList<TileData>): MutableList<TileData> {
         val tempArr = mutableListOf<Int>()
         repeat(array.size) {
-            if (array[it] == null) tempArr.add(it)
+            if (array[it].digit == null) tempArr.add(it)
         }
         if (tempArr.isNotEmpty()) {
             val position = tempArr.random()
             array[position] = selectRandomDigit()
-        } else return null
+        }
         return array
     }
 
-    private fun selectRandomDigit(): Int {
+    private fun selectRandomDigit(): TileData {
         val a = (0..100).random()
-        return if (a < 85) 2 else 4
+        return if (a < 85) TileData(2,0 ) else TileData(4,0)
     }
 
-    private fun canContinue(array: MutableList<Int?>) {
+    private fun canContinue(array: MutableList<TileData>) {
         if (!GameOverCheck().canContinue(array)) {
             _gameOver.update { true }
         }

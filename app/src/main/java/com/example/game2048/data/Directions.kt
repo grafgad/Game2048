@@ -5,4 +5,5 @@ enum class Directions{
     LEFT,
     DOWN,
     UP,
+    NONE
 }

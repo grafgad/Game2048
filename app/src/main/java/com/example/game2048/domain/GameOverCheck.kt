@@ -1,17 +1,18 @@
 package com.example.game2048.domain
 
-import com.example.game2048.data.ROWCOUNT
+import com.example.game2048.ROWCOUNT
+import com.example.game2048.data.TileData
 
 class GameOverCheck {
-    fun canContinue(array: MutableList<Int?>): Boolean {
+    fun canContinue(array: MutableList<TileData>): Boolean {
         var isHorizontalSum = false
         var isVerticalSum = false
-        val hasNulls = array.contains(null)
+        val hasNulls = array.contains(TileData(null, 0))
         if (!hasNulls) {
             // проверка по горизонталм
             for (line in 0 until array.size / ROWCOUNT) {
-                val startIndex = line * ROWCOUNT // начало линии
-                val endIndex = startIndex + ROWCOUNT - 1 // конец линии
+                val startIndex = line * ROWCOUNT
+                val endIndex = startIndex + ROWCOUNT - 1
 
                 for (position in startIndex until endIndex) {
                     val digit = position + 1

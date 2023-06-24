@@ -1,12 +1,13 @@
 package com.example.game2048.domain
 
-import com.example.game2048.data.ROWCOUNT
+import com.example.game2048.ROWCOUNT
+import com.example.game2048.data.TileData
 import com.example.game2048.presentation.GameViewModel
 
 class Swipes(private val viewModel: GameViewModel) {
 
-    fun swipeToDown(matrix: MutableList<Int?>): MutableList<Int?> {
-        val tempArr = mutableListOf<Int?>()
+    fun swipeToDown(matrix: MutableList<TileData>): MutableList<TileData> {
+        val tempArr = mutableListOf<TileData>()
 
         for (column in 0 until matrix.size / ROWCOUNT) {
             val endIndex = matrix.size - ROWCOUNT + column // конец колонки
@@ -32,8 +33,8 @@ class Swipes(private val viewModel: GameViewModel) {
         return matrixUpdateVertical(matrix, tempArr)
     }
 
-    fun swipeToUp(matrix: MutableList<Int?>): MutableList<Int?> {
-        val tempArr = mutableListOf<Int?>()
+    fun swipeToUp(matrix: MutableList<TileData>): MutableList<TileData> {
+        val tempArr = mutableListOf<TileData>()
 
         for (column in 0 until matrix.size / ROWCOUNT) {
             val endIndex = matrix.size - ROWCOUNT + column // конец колонки
@@ -59,12 +60,12 @@ class Swipes(private val viewModel: GameViewModel) {
         return matrixUpdateVertical(matrix, tempArr)
     }
 
-    fun swipeToRight(matrix: MutableList<Int?>): MutableList<Int?> {
-        val tempArr = mutableListOf<Int?>()
+    fun swipeToRight(matrix: MutableList<TileData>): MutableList<TileData> {
+        val tempArr = mutableListOf<TileData>()
 
         for (line in 0 until matrix.size / ROWCOUNT) {
-            val startIndex = line * ROWCOUNT // начало линии
-            val endIndex = startIndex + ROWCOUNT - 1 // конец линии
+            val startIndex = line * ROWCOUNT //
+            val endIndex = startIndex + ROWCOUNT - 1
             var fullTileQuantity = 0
             var summedTileFactor = 0
 
@@ -86,12 +87,12 @@ class Swipes(private val viewModel: GameViewModel) {
         return matrixUpdateHorizontal(matrix, tempArr)
     }
 
-    fun swipeToLeft(matrix: MutableList<Int?>): MutableList<Int?> {
-        val tempArr = mutableListOf<Int?>()
+    fun swipeToLeft(matrix: MutableList<TileData>): MutableList<TileData> {
+        val tempArr = mutableListOf<TileData>()
 
         for (line in 0 until matrix.size / ROWCOUNT) {
-            val startIndex = line * ROWCOUNT // начало линии
-            val endIndex = startIndex + ROWCOUNT - 1 // конец линии
+            val startIndex = line * ROWCOUNT
+            val endIndex = startIndex + ROWCOUNT - 1
             var fullTileQuantity = 0
             var summedTileFactor = 0
 
@@ -115,15 +116,14 @@ class Swipes(private val viewModel: GameViewModel) {
 
     private fun sumDigits(
         position: Int,
-        matrix: MutableList<Int?>,
+        matrix: MutableList<TileData>,
         blockTile: Int,
         summed: Boolean,
         range: IntProgression,
     ): Boolean {
         for (comparePosition in range) {
-            // прерываем если есть между плитками есть другая непустая
-            if (blockSumThroughTile(matrix, comparePosition, blockTile)) break
-            if (matrix[position] == matrix[comparePosition] && matrix[position] != null) {
+            if (blockSumThroughFullTile(matrix, comparePosition, blockTile)) break
+            if (matrix[position].digit == matrix[comparePosition].digit && matrix[position].digit != null) {
                 if (summed) break // если суммирование уже произошло, то прерываем цикл
                 sumTiles(matrix, position, comparePosition)
                 return true
@@ -132,63 +132,30 @@ class Swipes(private val viewModel: GameViewModel) {
         return false
     }
 
-    private fun blockSumThroughTile(
-        array: MutableList<Int?>,
+    private fun blockSumThroughFullTile( // прерываем если между плитками есть другая непустая плитка
+        array: MutableList<TileData>,
         comparePosition: Int,
         blockTile: Int
     ): Boolean {
-        if (array[blockTile] != null && comparePosition != blockTile) {
+        if (array[blockTile].digit != null && comparePosition != blockTile) {
             return true
         }
         return false
     }
 
     private fun sumTiles(
-        matrix: MutableList<Int?>,
+        matrix: MutableList<TileData>,
         position: Int,
         comparePosition: Int
     ) {
-        matrix[position] = matrix[position]!!.times(2) // умножаем значение вдвое
-        matrix[comparePosition] = null // обнуляем соседнюю ячейку
-        viewModel.setMoveScore(matrix[position]!!)
+        matrix[position].digit =
+            matrix[position].digit!!.times(2)  // умножаем значение плитки вдвое
+        matrix[comparePosition].digit = null // обнуляем соседнюю ячейку
+        viewModel.setMoveScore(matrix[position].digit!!)
     }
 
-    private fun addNullsToTempArrVertical(
-        tempArr: MutableList<Int?>,
-        lineSize: Int,
-        index: Int?
-    ) {
-        while (tempArr.size < lineSize) {
-            if (index != null) {
-                tempArr.add(index = index, element = null)
-            } else {
-                tempArr.add(element = null)
-            }
-        }
-    }
-
-    private fun addNullsToTempArrHorizontal(
-        tempArr: MutableList<Int?>,
-        lineSize: Int,
-        index: Int?
-    ) {
-        while (tempArr.size <= lineSize) {
-            if (index != null) {
-                tempArr.add(
-                    index = index,
-                    element = null
-                )
-            } else {
-                tempArr.add(
-                    element = null
-                )
-            }
-        }
-    }
-
-    // добавляем во временный массив числовые элементы
-    private fun addDigitsToTempArr(array: MutableList<Int?>, digit: Int?, index: Int) {
-        if (digit != null) {
+    private fun addDigitsToTempArr(array: MutableList<TileData>, digit: TileData, index: Int) {
+        if (digit.digit != null) {
             array.add(
                 index = index,
                 element = digit
@@ -196,49 +163,73 @@ class Swipes(private val viewModel: GameViewModel) {
         }
     }
 
+    private fun shiftRegistration(
+        // регистрация сдвига плитки для анимации
+        array: MutableList<TileData>,
+        position: Int,
+        shift: Int,
+        fullTileCorrection: Int,
+    ) {
+        val shiftValue = if (fullTileCorrection == 0 && array[position].digit == null) 0 else shift
+        viewModel.setTileShift(position, array[position].digit, shiftValue)
+    }
+
+    private fun fullTileCalc(
+        fullTileQuantity: Int,
+        array: MutableList<TileData>,
+        position: Int,
+    ): Int {
+        var fullTileQuantityInternal = fullTileQuantity
+        if (array[position].digit != null) fullTileQuantityInternal++
+        return fullTileQuantityInternal
+    }
+
+    private fun checkFullTileCorrection(sumFactor: Boolean): Int {
+        return if (sumFactor) 1 else 0
+    }
+
+    private fun addNullsToTempArrVertical(
+        tempArr: MutableList<TileData>,
+        lineSize: Int,
+        index: Int?
+    ) {
+        while (tempArr.size < lineSize) {
+            if (index != null) tempArr.add(index = index, element = TileData(null, 0))
+            else tempArr.add(element = TileData(null, 0))
+        }
+    }
+
+    private fun addNullsToTempArrHorizontal(
+        tempArr: MutableList<TileData>,
+        lineSize: Int,
+        index: Int?
+    ) {
+        while (tempArr.size <= lineSize) {
+            if (index != null) tempArr.add(index = index, element = TileData(null, 0))
+            else tempArr.add(element = TileData(null, 0))
+        }
+    }
+
     private fun matrixUpdateVertical(
-        matrix: MutableList<Int?>,
-        tempArr: MutableList<Int?>
-    ): MutableList<Int?> {
+        matrix: MutableList<TileData>,
+        tempArr: MutableList<TileData>
+    ): MutableList<TileData> {
         repeat(times = ROWCOUNT) { i ->
             repeat(times = ROWCOUNT) { k ->
-                matrix[i * ROWCOUNT + k] = tempArr[ROWCOUNT * k + i]
+                matrix[i * ROWCOUNT + k] =
+                    TileData(tempArr[ROWCOUNT * k + i].digit, tempArr[ROWCOUNT * k + i].shift)
             }
         }
         return matrix
     }
 
     private fun matrixUpdateHorizontal(
-        matrix: MutableList<Int?>,
-        tempArr: MutableList<Int?>
-    ): MutableList<Int?> {
+        matrix: MutableList<TileData>,
+        tempArr: MutableList<TileData>
+    ): MutableList<TileData> {
         repeat(times = tempArr.size) { position ->
-            matrix[position] = tempArr[position]
+            matrix[position] = TileData(tempArr[position].digit, tempArr[position].shift)
         }
         return matrix
-    }
-
-    private fun shiftRegistration(
-        array: MutableList<Int?>,
-        position: Int,
-        shift: Int,
-        fullTileCorrection: Int,
-    ) {
-        val shiftValue = if (fullTileCorrection == 0 && array[position] == null) 0 else shift
-        viewModel.setTileData(position, shiftValue)
-    }
-
-    private fun fullTileCalc(
-        fullTileQuantity: Int,
-        array: MutableList<Int?>,
-        position: Int,
-    ): Int {
-        var fullTileQuantityInternal = fullTileQuantity
-        if (array[position] != null) fullTileQuantityInternal++
-        return fullTileQuantityInternal
-    }
-
-    private fun checkFullTileCorrection(sumFactor: Boolean): Int {
-        return if (sumFactor) 1 else 0
     }
 }

@@ -1,21 +1,32 @@
 package com.example.game2048.data
 
-const val ROWCOUNT = 4
+import com.example.game2048.ROWCOUNT
 
 data class Matrix(
-//    var array: MutableList<Int?> = arrayOfNulls<Int?>(ROWCOUNT * ROWCOUNT).toMutableList()
-    var array: MutableList<Int?> = arrayOf(
-        2, 2, 2, 4,
-        128,null, 64,16,
-        512,1024, null, 2048,
-        32768,null,8192,null,
+    var array: MutableList<TileData> = arrayOf(
+        TileData(2, 0),
+        TileData(2, 0),
+        TileData(2, 0),
+        TileData(4, 0),
+        TileData(128, 0),
+        TileData(null, 0),
+        TileData(64, 0),
+        TileData(4, 0),
+        TileData(512, 0),
+        TileData(1024, 0),
+        TileData(null, 0),
+        TileData(2048, 0),
+        TileData(32768, 0),
+        TileData(null, 0),
+        TileData(8192, 0),
+        TileData(null, 0),
     ).toMutableList()
 ) {
-    fun matrixCopy(newArray: MutableList<Int?>): Matrix = Matrix().copy(
+    fun matrixCopy(newArray: MutableList<TileData>): Matrix = Matrix().copy(
         array = newArray.toMutableList()
     )
 
-    fun squareMatrix(): MutableList<List<Int?>> {
+    fun squareMatrix(): MutableList<List<TileData>> {
         return array.chunked(ROWCOUNT).toMutableList()
     }
 }

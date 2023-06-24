@@ -19,8 +19,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.game2048.ROWCOUNT
+import com.example.game2048.TILEPADDING
 import com.example.game2048.data.Directions
-import com.example.game2048.data.ROWCOUNT
+import com.example.game2048.data.TileData
 import com.example.game2048.presentation.GameViewModel
 import com.example.game2048.presentation.theme.GameColors
 import kotlin.math.abs
@@ -30,7 +32,7 @@ fun Arena(
     modifier: Modifier = Modifier,
     viewModel: GameViewModel
 ) {
-    var direction by remember { mutableStateOf(Directions.UP) }
+    var direction by remember { mutableStateOf(Directions.NONE) }
     val gameOver by viewModel.gameOver.collectAsState()
     Box(
         modifier = modifier
@@ -43,18 +45,10 @@ fun Arena(
                         change.consume()
                         val (x, y) = dragAmount
                         when {
-                            x > 5 && abs(x) > abs(y) -> {
-                                direction = Directions.RIGHT
-                            } // RIGHT
-                            x < -5 && abs(x) > abs(y) -> {
-                                direction = Directions.LEFT
-                            } // LEFT
-                            y > 5 && abs(x) < abs(y) -> {
-                                direction = Directions.DOWN
-                            } // DOWN
-                            y < -5 && abs(x) < abs(y) -> {
-                                direction = Directions.UP
-                            } // UP
+                            x > 5 && abs(x) > abs(y) -> direction = Directions.RIGHT // RIGHT
+                            x < -5 && abs(x) > abs(y) -> direction = Directions.LEFT // LEFT
+                            y > 5 && abs(x) < abs(y) -> direction = Directions.DOWN // DOWN
+                            y < -5 && abs(x) < abs(y) -> direction = Directions.UP // UP
                         }
                     },
                     onDragEnd = {
@@ -68,9 +62,10 @@ fun Arena(
         val game by viewModel.game.collectAsState()
         Column {
             repeat(ROWCOUNT) { row ->
-                HorizontalFields(
+                MatrixLine(
                     modifier = Modifier,
-                    line = game.matrix.squareMatrix()[row]
+                    line = game.matrix.squareMatrix()[row],
+                    direction = direction
                 )
             }
         }
@@ -84,9 +79,10 @@ fun Arena(
 }
 
 @Composable
-fun HorizontalFields(
+fun MatrixLine(
     modifier: Modifier = Modifier,
-    line: List<Int?> = listOf()
+    line: List<TileData?> = listOf(),
+    direction: Directions
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
@@ -97,8 +93,12 @@ fun HorizontalFields(
                 modifier = Modifier
                     .weight(1f)
                     .aspectRatio(1f)
-                    .padding(3.dp),
-                digit = line[digit],
+                    .padding(TILEPADDING.dp),
+                tileData = TileData(
+                    digit = line[digit]?.digit,
+                    shift = line[digit]!!.shift
+                ),
+                direction = direction
             )
         }
     }
